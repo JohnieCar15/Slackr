@@ -5,11 +5,11 @@ import { fileToDataUrl} from './helpers.js';
 let globalToken = null;
 
 const loadDashboard = () => {
-
+    apiCallGet('channel', {}, true);
 };
 
 const showPage = (pageName) => {
-    for (const page of document.getSelectorAll('.page-block')) {
+    for (const page of document.querySelectorAll('.page-block')) {
         page.style.display = 'none';
     }
     document.getElementById(`page-${pageName}`).style.display = 'block';
