@@ -30,14 +30,38 @@ export function fileToDataUrl(file) {
     return dataUrlPromise;
 }
 
-export const apiCallPost = (path, body, authed=false) => {
+
+export const apiCallPost = (path, body, globalToken) => {
     return new Promise((resolve, reject) => {
         fetch(`http://localhost:5005/${path}`, {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {
                 'Content-type': 'application/json',
-                'Authorization': undefined
+                'Authorization': (globalToken !== null) ? `Bearer ${globalToken}` : undefined
+            }
+        })
+        .then((response) => response.json())
+        .then((body) => {
+            if (body.error) {
+                reject('Error!');
+            } else {
+                resolve(body);
+            }
+        });
+    }
+    );
+}
+
+
+
+export const apiCallGet = (path, globalToken) => {
+    return new Promise((resolve, reject) => {
+        fetch(`http://localhost:5005/${path}`, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': (globalToken !== null) ? `Bearer ${globalToken}` : undefined
             }
         })
         .then((response) => response.json())

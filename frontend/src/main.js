@@ -1,11 +1,25 @@
 import { BACKEND_PORT } from './config.js';
 // A helper you may want to use when uploading new images to the server.
 import { fileToDataUrl} from './helpers.js';
+import { apiCallGet, apiCallPost } from './helpers.js';
 
 let globalToken = null;
 
 const loadDashboard = () => {
-    apiCallGet('channel', {}, true);
+    apiCallGet('channel', globalToken)
+    .then((body) => {
+        const publicChannels = document.getElementById('public-channels');
+        publicChannels.innerHTML = '';
+        const channels = body.channels;
+        for(let i = 0; i < channels.length; i++) {
+            const channel = document.createElement('div');
+            channel.innerHTML = `Channel: ${channels[i].name}`;
+            publicChannels.appendChild(channel);
+        }
+    })
+    .catch((msg) => {
+        alert(msg);
+    })
 };
 
 const showPage = (pageName) => {
@@ -17,50 +31,6 @@ const showPage = (pageName) => {
         loadDashboard();
     }
 }
-
-const apiCallPost = (path, body, authed=false) => {
-    return new Promise((resolve, reject) => {
-        fetch(`http://localhost:5005/${path}`, {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: {
-                'Content-type': 'application/json',
-                'Authorization': authed ? `Bearer ${globalToken}` : undefined
-            }
-        })
-        .then((response) => response.json())
-        .then((body) => {
-            if (body.error) {
-                reject('Error!');
-            } else {
-                resolve(body);
-            }
-        });
-    }
-    );
-}
-
-const apiCallGet = (path, body, authed=false) => {
-    return new Promise((resolve, reject) => {
-        fetch(`http://localhost:5005/${path}`, {
-            method: 'GET',
-            headers: {
-                'Content-type': 'application/json',
-                'Authorization': authed ? `Bearer ${globalToken}` : undefined
-            }
-        })
-        .then((response) => response.json())
-        .then((body) => {
-            if (body.error) {
-                reject('Error!');
-            } else {
-                resolve(body);
-            }
-        });
-    }
-    );
-}
-
 
 document.getElementById('register-submit').addEventListener('click', () => {
     const email = document.getElementById('register-email').value;
@@ -74,7 +44,7 @@ document.getElementById('register-submit').addEventListener('click', () => {
             email: email,
             name: name,
             password: password
-        })
+        }, globalToken)
         .then((body) => {
             const {token, userId} = body;
             globalToken = token;
@@ -93,7 +63,7 @@ document.getElementById('login-submit').addEventListener('click', () => {
     apiCallPost('auth/login', {
         email: email,
         password: password
-    })
+    }, globalToken)
     .then((body) => {
         const {token, userId} = body;
         globalToken = token;
@@ -107,11 +77,27 @@ document.getElementById('login-submit').addEventListener('click', () => {
 });
 
 document.getElementById('logout').addEventListener('click', () => {
-    apiCallPost('auth/logout', {}, true)
+    apiCallPost('auth/logout', {}, globalToken)
     .then(() => {
         localStorage.removeItem('token', null);
         showPage('register');
     });
+});
+
+document.getElementById('create-channel-submit').addEventListener('click', () => {
+    const name = document.getElementById('create-channel-name').value;
+    const description = document.getElementById('create-channel-description').value;
+    const privateChannel = document.getElementById('create-channel-private').checked;
+
+    const result = apiCallPost('channel', {
+        name: name,
+        description: description,
+        private: privateChannel
+    }, globalToken)
+    .then(() => {
+        showPage('dashboard');
+    });
+    console.log(result);
 });
 
 for (const redirect of document.querySelectorAll('.redirect')) {

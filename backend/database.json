@@ -1,30 +1,59 @@
 {
   "users": {
-    "32815": {
-      "email": "johniecarino11235@gmail.com",
-      "name": "JohnieCar",
-      "password": "69Caroots",
-      "bio": null,
-      "image": null,
-      "sessionActive": false
-    },
-    "42143": {
-      "email": "johniecarino165@gmail.com",
-      "name": "JohnieCar",
-      "password": "69Caroots",
-      "bio": null,
-      "image": null,
-      "sessionActive": false
-    },
-    "70058": {
+    "66612": {
       "email": "johniecarino15@gmail.com",
       "name": "JohnieCar",
       "password": "69Caroots",
       "bio": null,
       "image": null,
-      "sessionActive": false
+      "sessionActive": true
     }
   },
-  "channels": {},
+  "channels": {
+    "203505": {
+      "name": "6ix9ime",
+      "creator": 66612,
+      "private": true,
+      "description": "",
+      "createdAt": "2023-10-20T11:37:58.953Z",
+      "members": [
+        66612
+      ],
+      "messages": []
+    },
+    "463838": {
+      "name": "Hello",
+      "creator": 66612,
+      "private": true,
+      "description": "",
+      "createdAt": "2023-10-20T11:39:52.239Z",
+      "members": [
+        66612
+      ],
+      "messages": []
+    },
+    "690381": {
+      "name": "Hellothere",
+      "creator": 66612,
+      "private": true,
+      "description": "",
+      "createdAt": "2023-10-20T11:40:04.099Z",
+      "members": [
+        66612
+      ],
+      "messages": []
+    },
+    "712985": {
+      "name": "abgs",
+      "creator": 66612,
+      "private": true,
+      "description": "",
+      "createdAt": "2023-10-20T11:37:51.798Z",
+      "members": [
+        66612
+      ],
+      "messages": []
+    }
+  },
   "nextMessageId": 1
 }
