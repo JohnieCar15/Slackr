@@ -11,3 +11,8 @@ html, body {
 .page-block {
     display: none;
 }
+
+#create-channel {
+    border: 1px solid black;
+    padding-bottom: 40px;
+}

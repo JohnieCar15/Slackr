@@ -9,6 +9,7 @@
   <!-- You can add your styles and scripts here -->
   <link rel="stylesheet" type="text/css" media="screen" href="styles/provided.css" />
   <script type="module" src="src/helpers.js"></script>
+  <script type="module" src="src/channel.js"></script>
 </head>
 
 <body>
@@ -16,30 +17,30 @@
   <header class="banner">
     <h1>Slackr</h1>
   </header>
-  <main role="main">
+  <main role="main" id="main">
     <!-- app goes here -->
     <div id="page-dashboard" class="page-block">
       <h2>Dashboard</h2>
-      <h3>Create channel</h3>
-      <form>
-        <label for="create-channel-name">Name</label>
-        <input type="text" id="create-channel-name" name="create-channel-name" value="Hello"><br>
-        <label for="create-channel-description">Description:</label><br>
-        <textarea id="create-channel-description" name="create-channel-description" rows="4" cols="50" value="Hello"></textarea><br>
-        <label for="create-channel-private">Private</label>
-        <input type="checkbox" id="create-channel-private" name="create-channel-private" checked="true"><br>
-        <button type="button" id="create-channel-submit">Submit</button>
-      </form>
+      <div id="create-channel">
+        <h3>Create channel</h3>
+        <form>
+          <label for="create-channel-name">Name</label>
+          <input type="text" id="create-channel-name" name="create-channel-name" value="Hello"><br>
+          <label for="create-channel-description">Description:</label><br>
+          <textarea id="create-channel-description" name="create-channel-description" rows="4" cols="50" value="Hello"></textarea><br>
+          <label for="create-channel-private">Private</label>
+          <input type="checkbox" id="create-channel-private" name="create-channel-private" checked="true"><br>
+          <button type="button" id="create-channel-submit">Submit</button>
+        </form>
+      </div>
       <br>
+      <h3>Public channels</h3>
       <div id="public-channels">
-        <h3>Public channels</h3>
+      </div>
+      <h3>Private channels</h3>
+      <div id="private-channels">
       </div>
       <br>
-      <div id="private-channels">
-        <h3>Private channels</h3>
-
-      </div>
-
 
       <button type="button" id="logout">Logout</button>
     </div>

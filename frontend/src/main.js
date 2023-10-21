@@ -1,28 +1,48 @@
 import { BACKEND_PORT } from './config.js';
 // A helper you may want to use when uploading new images to the server.
-import { fileToDataUrl} from './helpers.js';
 import { apiCallGet, apiCallPost } from './helpers.js';
+import { createChannelPage, loadChannels } from './channel.js';
 
 let globalToken = null;
 
 const loadDashboard = () => {
     apiCallGet('channel', globalToken)
     .then((body) => {
+
         const publicChannels = document.getElementById('public-channels');
-        publicChannels.innerHTML = '';
-        const channels = body.channels;
-        for(let i = 0; i < channels.length; i++) {
-            const channel = document.createElement('div');
-            channel.innerHTML = `Channel: ${channels[i].name}`;
-            publicChannels.appendChild(channel);
+        publicChannels.textContent = '';
+
+        const privateChannels = document.getElementById('private-channels');
+        privateChannels.textContent = '';
+
+        for (const channel of body.channels) {
+            const channelDiv = document.createElement('a');
+            channelDiv.textContent = `Channel: ${channel.name}`;
+            channelDiv.setAttribute('style', 'display: block');
+            channelDiv.setAttribute('href', '#');
+            createChannelPage(channel, globalToken);
+            channelDiv.addEventListener('click', () => {
+                showPage(`channel-${channel.id}`)
+            })
+            // channelDetails(channel.id, globalToken);
+
+            if (channel.private) {
+                privateChannels.appendChild(channelDiv);
+            } else {
+                publicChannels.appendChild(channelDiv);
+            }
         }
     })
     .catch((msg) => {
         alert(msg);
     })
+
+
+
+
 };
 
-const showPage = (pageName) => {
+export const showPage = (pageName) => {
     for (const page of document.querySelectorAll('.page-block')) {
         page.style.display = 'none';
     }
@@ -97,7 +117,6 @@ document.getElementById('create-channel-submit').addEventListener('click', () =>
     .then(() => {
         showPage('dashboard');
     });
-    console.log(result);
 });
 
 for (const redirect of document.querySelectorAll('.redirect')) {
