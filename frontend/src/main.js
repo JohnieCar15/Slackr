@@ -8,7 +8,6 @@ let globalToken = null;
 const loadDashboard = () => {
     apiCallGet('channel', globalToken)
     .then((body) => {
-
         const publicChannels = document.getElementById('public-channels');
         publicChannels.textContent = '';
 
@@ -16,21 +15,8 @@ const loadDashboard = () => {
         privateChannels.textContent = '';
 
         for (const channel of body.channels) {
-            const channelDiv = document.createElement('a');
-            channelDiv.textContent = `Channel: ${channel.name}`;
-            channelDiv.setAttribute('style', 'display: block');
-            channelDiv.setAttribute('href', '#');
-            createChannelPage(channel, globalToken);
-            channelDiv.addEventListener('click', () => {
-                showPage(`channel-${channel.id}`)
-            })
-            // channelDetails(channel.id, globalToken);
-
-            if (channel.private) {
-                privateChannels.appendChild(channelDiv);
-            } else {
-                publicChannels.appendChild(channelDiv);
-            }
+            createChannelPage(channel, publicChannels, privateChannels, globalToken);
+            console.log(channel);
         }
     })
     .catch((msg) => {
