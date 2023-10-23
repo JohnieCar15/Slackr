@@ -30,7 +30,6 @@ export function fileToDataUrl(file) {
     return dataUrlPromise;
 }
 
-
 export const apiCallPost = (path, body, globalToken) => {
     return new Promise((resolve, reject) => {
         fetch(`http://localhost:5005/${path}`, {
@@ -44,7 +43,7 @@ export const apiCallPost = (path, body, globalToken) => {
         .then((response) => response.json())
         .then((body) => {
             if (body.error) {
-                reject('Error!');
+                reject(body.error);
             } else {
                 resolve(body);
             }
@@ -66,7 +65,7 @@ export const apiCallPut = (path, body, globalToken) => {
         .then((response) => response.json())
         .then((body) => {
             if (body.error) {
-                reject('Error!');
+                reject(body.error);
             } else {
                 resolve(body);
             }
@@ -87,7 +86,28 @@ export const apiCallGet = (path, globalToken) => {
         .then((response) => response.json())
         .then((body) => {
             if (body.error) {
-                reject('Error!');
+                reject(body.error);
+            } else {
+                resolve(body);
+            }
+        });
+    }
+    );
+}
+
+export const apiCallDelete = (path, globalToken) => {
+    return new Promise((resolve, reject) => {
+        fetch(`http://localhost:5005/${path}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': (globalToken !== null) ? `Bearer ${globalToken}` : undefined
+            }
+        })
+        .then((response) => response.json())
+        .then((body) => {
+            if (body.error) {
+                reject(body.error);
             } else {
                 resolve(body);
             }

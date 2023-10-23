@@ -1,45 +1,14 @@
 {
   "users": {
-    "56585": {
+    "65607": {
       "email": "johniecarino15@gmail.com",
       "name": "JohnieCar",
-      "password": "69Caroots",
-      "bio": null,
-      "image": null,
-      "sessionActive": true
-    },
-    "85617": {
-      "email": "johniecarino@gmail.com",
-      "name": "Johnie",
       "password": "69Caroots",
       "bio": null,
       "image": null,
       "sessionActive": false
     }
   },
-  "channels": {
-    "738960": {
-      "name": "PrivateChannel",
-      "creator": 56585,
-      "private": true,
-      "description": "My first private channel",
-      "createdAt": "2023-10-22T10:23:05.936Z",
-      "members": [
-        56585
-      ],
-      "messages": []
-    },
-    "809862": {
-      "name": "MyPublicChannel",
-      "creator": 56585,
-      "private": false,
-      "description": "My first public channel",
-      "createdAt": "2023-10-22T10:22:51.583Z",
-      "members": [
-        56585
-      ],
-      "messages": []
-    }
-  },
+  "channels": {},
   "nextMessageId": 1
 }

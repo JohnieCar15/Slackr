@@ -1,9 +1,10 @@
 import { BACKEND_PORT } from './config.js';
 // A helper you may want to use when uploading new images to the server.
 import { apiCallGet, apiCallPost } from './helpers.js';
-import { createChannelPage, loadChannels } from './channel.js';
+import { createChannelPage } from './channel.js';
 
 let globalToken = null;
+let globalUserId = null;
 
 const loadDashboard = () => {
     apiCallGet('channel', globalToken)
@@ -15,17 +16,13 @@ const loadDashboard = () => {
         privateChannels.textContent = '';
 
         for (const channel of body.channels) {
-            createChannelPage(channel, publicChannels, privateChannels, globalToken);
+            createChannelPage(channel, publicChannels, privateChannels, false, globalToken);
             console.log(channel);
         }
     })
     .catch((msg) => {
         alert(msg);
     })
-
-
-
-
 };
 
 export const showPage = (pageName) => {
@@ -54,7 +51,9 @@ document.getElementById('register-submit').addEventListener('click', () => {
         .then((body) => {
             const {token, userId} = body;
             globalToken = token;
+            globalUserId = userId;
             localStorage.setItem('token', token);
+            localStorage.setItem('userId', userId);
             showPage('dashboard');
         })
         .catch((msg) => {
@@ -73,7 +72,9 @@ document.getElementById('login-submit').addEventListener('click', () => {
     .then((body) => {
         const {token, userId} = body;
         globalToken = token;
+        globalUserId = userId;
         localStorage.setItem('token', token);
+        localStorage.setItem('userId', userId);
         showPage('dashboard');
     })
     .catch((msg) => {
@@ -86,6 +87,7 @@ document.getElementById('logout').addEventListener('click', () => {
     apiCallPost('auth/logout', {}, globalToken)
     .then(() => {
         localStorage.removeItem('token', null);
+        localStorage.removeItem('userId', null);
         showPage('register');
     });
 });
@@ -95,7 +97,7 @@ document.getElementById('create-channel-submit').addEventListener('click', () =>
     const description = document.getElementById('create-channel-description').value;
     const privateChannel = document.getElementById('create-channel-private').checked;
 
-    const result = apiCallPost('channel', {
+    apiCallPost('channel', {
         name: name,
         description: description,
         private: privateChannel
@@ -115,6 +117,11 @@ for (const redirect of document.querySelectorAll('.redirect')) {
 const localStorageToken = localStorage.getItem('token');
 if (localStorageToken !== null) {
     globalToken = localStorageToken;
+}
+
+const localUserId = localStorage.getItem('userId');
+if (localUserId !== null) {
+    globalUserId = localUserId;
 }
 
 if (globalToken === null) {
