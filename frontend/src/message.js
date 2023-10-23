@@ -1,14 +1,18 @@
-import { apiCallPost, apiCallGet, apiCallDelete } from "./helpers.js"
+import { apiCallPost, apiCallGet, apiCallDelete, apiCallPut } from "./helpers.js"
 import { showPage } from "./main.js";
 import { getUserName, getUserImage } from "./user.js";
 
-export const sendMessage = (channel, message, image, messagesDiv, globalToken) => {
+export const sendMessage = (channel, message, image, messagesDiv, globalUserId, globalToken) => {
+    if (message.length === 0) {
+        return;
+    }
+
     apiCallPost(`message/${channel.id}`, {
         message: message,
         image: image
     }, globalToken)
     .then((body) => {
-        getMessages(channel, 0, messagesDiv, globalToken);
+        getMessages(channel, 0, messagesDiv, globalUserId, globalToken);
     })
     .catch((msg) => {
         alert(msg);
@@ -22,11 +26,28 @@ export const deleteMessage = (channel, message, messageDiv, globalToken) => {
 
     })
     .catch((msg) => {
-        // alert(msg);
+        alert(msg);
     })
 }
 
-export const getMessages = (channel, index, messagesDiv, globalToken) => {
+export const editMessage = (channel, oldMessage, newMessage, message, image, messagesDiv, globalUserId, globalToken) => {
+    if (oldMessage.message === newMessage.value) {
+        return;
+    }
+
+    apiCallPut(`message/${channel.id}/${oldMessage.id}`, {
+        message: newMessage.value,
+        image: image
+    }, globalToken)
+    .then((body) => {
+        getMessages(channel, 0, messagesDiv, globalUserId, globalToken);
+    })
+    .catch((msg) => {
+        alert(msg);
+    })
+}
+
+export const getMessages = (channel, index, messagesDiv, globalUserId, globalToken) => {
     messagesDiv.textContent = '';
     const messagesDivHeader = document.createElement('h3');
     messagesDivHeader.textContent = 'Messages';
@@ -41,24 +62,6 @@ export const getMessages = (channel, index, messagesDiv, globalToken) => {
             messageDiv.style.border = '1px solid black';
             messageDiv.style.paddingBottom = '40px';
             messageDiv.style.marginBottom = '20px';
-
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete message';
-            deleteButton.addEventListener('click', () => {
-                deleteMessage(channel, message, messageDiv, globalToken);
-
-            })
-
-            messageDiv.addEventListener('mouseover', () => {
-                messageDiv.appendChild(deleteButton);
-                messageDiv.style.opacity = '0.5';
-            })
-
-            messageDiv.addEventListener('mouseout', () => {
-                messageDiv.removeChild(deleteButton);
-                messageDiv.style.opacity = '1';
-            })
 
             const userDiv = document.createElement('div');
             userDiv.style.display = 'flex';
@@ -77,10 +80,15 @@ export const getMessages = (channel, index, messagesDiv, globalToken) => {
 
             const timestamp = document.createElement('p');
 
-
-
             timestamp.textContent = messages[i].sentAt;
             userDiv.appendChild(timestamp);
+
+            if (messages[i].edited === true) {
+                const editedDate = document.createElement('p');
+                editedDate.textContent = messages[i].editedAt;
+                userDiv.appendChild(editedDate);
+            }
+
 
             messageDiv.appendChild(userDiv);
 
@@ -88,6 +96,32 @@ export const getMessages = (channel, index, messagesDiv, globalToken) => {
             message.textContent = messages[i].message;
             messageDiv.appendChild(message);
 
+            if (messages[i].sender === globalUserId) {
+                const editMessageHeader = document.createElement('h5');
+                editMessageHeader.textContent = 'Edit your message:'
+                messageDiv.appendChild(editMessageHeader);
+
+                const editMessageDiv = document.createElement('div');
+
+                editMessageDiv.style.display = 'flex';
+                const editMessageVal = document.createElement('textarea');
+                editMessageDiv.appendChild(editMessageVal)
+                const editMessageSubmit = document.createElement('button');
+                editMessageSubmit.textContent = 'submit'
+                editMessageSubmit.addEventListener('click', () => {
+                    editMessage(channel, messages[i], editMessageVal, message, undefined, messagesDiv, globalUserId, globalToken);
+                })
+                editMessageDiv.appendChild(editMessageSubmit)
+                messageDiv.appendChild(editMessageDiv);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete message';
+                deleteButton.addEventListener('click', () => {
+                    deleteMessage(channel, messages[i], messageDiv, globalToken);
+                })
+                messageDiv.appendChild(deleteButton);
+
+            }
 
             messagesDiv.appendChild(messageDiv);
         }

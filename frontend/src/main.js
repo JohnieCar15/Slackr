@@ -2,6 +2,7 @@ import { BACKEND_PORT } from './config.js';
 // A helper you may want to use when uploading new images to the server.
 import { apiCallGet, apiCallPost } from './helpers.js';
 import { createChannelJoinPage, createChannelPage } from './channel.js';
+import { getUserName } from './user.js';
 
 let globalToken = null;
 let globalUserId = null;
@@ -22,6 +23,7 @@ const loadDashboard = () => {
         removeAllChildNodes(privateChannels);
 
         for (const channel of body.channels) {
+            // console.log(channel);
             if (channel.members.includes(globalUserId) || !channel.private) {
                 const channelDiv = document.createElement('a');
                 channelDiv.textContent = `${channel.name}`;
@@ -36,19 +38,18 @@ const loadDashboard = () => {
                 } else {
                     publicChannels.appendChild(channelDiv);
                 }
-                console.log(channel)
             }
 
 
             if (!channel.private) {
                 if (channel.members.includes(globalUserId)) {
-                    createChannelPage(channel, false, globalToken);
+                    createChannelPage(channel, false, globalUserId, globalToken);
                 } else {
-                    createChannelJoinPage(channel, globalToken);
+                    createChannelJoinPage(channel, globalUserId, globalToken);
                 }
             } else {
                 if (channel.members.includes(globalUserId)) {
-                    createChannelPage(channel, false, globalToken);
+                    createChannelPage(channel, false, globalUserId, globalToken);
                 }
             }
         }
@@ -98,8 +99,8 @@ document.getElementById('register-submit').addEventListener('click', () => {
 });
 
 document.getElementById('login-submit').addEventListener('click', () => {
-    const email = document.getElementById('register-email').value;
-    const password = document.getElementById('register-password').value;
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
     apiCallPost('auth/login', {
         email: email,
         password: password
@@ -128,16 +129,19 @@ document.getElementById('logout').addEventListener('click', () => {
 });
 
 document.getElementById('create-channel-submit').addEventListener('click', () => {
-    const name = document.getElementById('create-channel-name').value;
-    const description = document.getElementById('create-channel-description').value;
-    const privateChannel = document.getElementById('create-channel-private').checked;
+    const name = document.getElementById('create-channel-name')
+    const description = document.getElementById('create-channel-description');
+    const privateChannel = document.getElementById('create-channel-private');
 
     apiCallPost('channel', {
-        name: name,
-        description: description,
-        private: privateChannel
+        name: name.value,
+        description: description.value,
+        private: privateChannel.checked
     }, globalToken)
     .then(() => {
+        name.value = '';
+        description.value = '';
+        privateChannel.checked = true;
         showPage('dashboard');
     });
 });
@@ -156,7 +160,7 @@ if (localStorageToken !== null) {
 
 const localUserId = localStorage.getItem('userId');
 if (localUserId !== null) {
-    globalUserId = localUserId;
+    globalUserId = parseInt(localUserId);
 }
 
 if (globalToken === null) {

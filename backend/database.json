@@ -1,16 +1,8 @@
 {
   "users": {
-    "27699": {
-      "email": "dcarino1408@gmail.com",
-      "name": "Daniel",
-      "password": "69Caroots",
-      "bio": null,
-      "image": null,
-      "sessionActive": false
-    },
-    "97349": {
+    "10631": {
       "email": "johniecarino15@gmail.com",
-      "name": "JohnieCarino",
+      "name": "JohnieCar",
       "password": "69Caroots",
       "bio": null,
       "image": null,
@@ -18,51 +10,102 @@
     }
   },
   "channels": {
-    "378311": {
-      "name": "Daniel Carino's Public",
-      "creator": 27699,
+    "279947": {
+      "name": "PrivateChannel",
+      "creator": 10631,
       "private": false,
       "description": "",
-      "createdAt": "2023-10-23T10:12:23.947Z",
+      "createdAt": "2023-10-23T12:09:33.232Z",
       "members": [
-        27699
+        10631
       ],
-      "messages": []
+      "messages": [
+        {
+          "id": 6,
+          "message": "Can I edit again?",
+          "sender": 10631,
+          "sentAt": "2023-10-23T13:02:50.150Z",
+          "edited": true,
+          "editedAt": "2023-10-23T13:03:08.417Z",
+          "pinned": false,
+          "reacts": []
+        },
+        {
+          "id": 5,
+          "message": "Edit now pls...",
+          "sender": 10631,
+          "sentAt": "2023-10-23T12:48:41.212Z",
+          "edited": true,
+          "editedAt": "2023-10-23T12:55:17.008Z",
+          "pinned": false,
+          "reacts": []
+        },
+        {
+          "id": 4,
+          "message": "I'm editing you now!",
+          "sender": 10631,
+          "sentAt": "2023-10-23T12:45:39.112Z",
+          "edited": true,
+          "editedAt": "2023-10-23T12:54:50.501Z",
+          "pinned": false,
+          "reacts": []
+        },
+        {
+          "id": 3,
+          "message": "Is this a new message??",
+          "sender": 10631,
+          "sentAt": "2023-10-23T12:19:37.406Z",
+          "edited": true,
+          "editedAt": "2023-10-23T12:48:30.760Z",
+          "pinned": false,
+          "reacts": []
+        }
+      ]
     },
-    "424678": {
-      "name": "Johnie Carino's Private",
-      "creator": 97349,
-      "private": true,
-      "description": "",
-      "createdAt": "2023-10-23T10:11:58.585Z",
-      "members": [
-        97349
-      ],
-      "messages": []
-    },
-    "538478": {
-      "name": "Johnie Carino's Public",
-      "creator": 97349,
+    "567022": {
+      "name": "My public channel",
+      "creator": 10631,
       "private": false,
       "description": "",
-      "createdAt": "2023-10-23T10:11:55.027Z",
+      "createdAt": "2023-10-23T12:10:10.899Z",
       "members": [
-        97349,
-        27699
+        10631
       ],
       "messages": []
     },
-    "595370": {
-      "name": "Daniel Carino's Private",
-      "creator": 27699,
-      "private": true,
+    "731332": {
+      "name": "Johnie Carino's public channel",
+      "creator": 10631,
+      "private": false,
       "description": "",
-      "createdAt": "2023-10-23T10:12:18.875Z",
+      "createdAt": "2023-10-23T12:08:02.189Z",
       "members": [
-        27699
+        10631
+      ],
+      "messages": []
+    },
+    "750753": {
+      "name": "Johnie Carino's public channel",
+      "creator": 10631,
+      "private": false,
+      "description": "",
+      "createdAt": "2023-10-23T12:07:52.337Z",
+      "members": [
+        10631
+      ],
+      "messages": []
+    },
+    "868413": {
+      "name": "PrivateChannel",
+      "creator": 10631,
+      "private": false,
+      "description": "",
+      "createdAt": "2023-10-23T12:09:18.430Z",
+      "members": [
+        10631
       ],
       "messages": []
     }
   },
-  "nextMessageId": 1
+  "nextMessageId": 7
 }
