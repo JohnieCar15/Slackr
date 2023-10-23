@@ -20,23 +20,38 @@ const editChannel = (channelId, name, description, globalToken) => {
     })
 }
 
-export const createChannelPage = (channel, publicChannels, privateChannels, isShowPage, globalToken) => {
+export const createChannelJoinPage = (channel, globalToken) => {
+    const page = document.getElementById(`page-channel-${channel.id}`)
+    if (page !== null) {
+        page.remove();
+    }
+
+    const channelPage = document.createElement('div');
+    channelPage.id = `page-channel-${channel.id}`
+    channelPage.classList.add('page-block');
+
+    const joinButton = document.createElement('button');
+    joinButton.textContent = 'Join this channel';
+    joinButton.addEventListener('click', () => {
+        joinChannel(channel, globalToken);
+    })
+
+    channelPage.appendChild(joinButton);
+
+    const goBack = document.createElement('button');
+    goBack.textContent = 'Go back to dashboard'
+    goBack.addEventListener('click', () => {
+        showPage('dashboard');
+    })
+    goBack.setAttribute('style', 'display: block');
+    channelPage.appendChild(goBack);
+
+    document.getElementById('main').appendChild(channelPage);
+}
+
+export const createChannelPage = (channel, isShowPage, globalToken) => {
     apiCallGet(`channel/${channel.id}`, globalToken)
     .then((body) => {
-        const channelDiv = document.createElement('a');
-        channelDiv.textContent = `${channel.name}`;
-        channelDiv.setAttribute('style', 'display: block');
-        channelDiv.setAttribute('href', '#');
-        channelDiv.addEventListener('click', () => {
-            showPage(`channel-${channel.id}`)
-        })
-
-        if (channel.private) {
-            privateChannels.appendChild(channelDiv);
-        } else {
-            publicChannels.appendChild(channelDiv);
-        }
-
         const page = document.getElementById(`page-channel-${channel.id}`)
         if (page !== null) {
             page.remove();
@@ -174,56 +189,14 @@ export const createChannelPage = (channel, publicChannels, privateChannels, isSh
 
     })
     .catch((msg) => {
-        if (msg === 'Authorised user is not a member of this channel') {
-            if (!channel.private) {
-                const channelDiv = document.createElement('a');
-                channelDiv.textContent = `${channel.name}`;
-                channelDiv.setAttribute('style', 'display: block');
-                channelDiv.setAttribute('href', '#');
-                channelDiv.addEventListener('click', () => {
-                    showPage(`channel-${channel.id}`)
-                })
-
-                publicChannels.appendChild(channelDiv);
-
-                const page = document.getElementById(`page-channel-${channel.id}`)
-                if (page !== null) {
-                    page.remove();
-                }
-
-                const channelPage = document.createElement('div');
-                channelPage.id = `page-channel-${channel.id}`
-                channelPage.classList.add('page-block');
-
-                const joinButton = document.createElement('button');
-                joinButton.textContent = 'Join this channel';
-                joinButton.addEventListener('click', () => {
-                    joinChannel(channel, globalToken);
-                })
-
-                channelPage.appendChild(joinButton);
-
-                const goBack = document.createElement('button');
-                goBack.textContent = 'Go back to dashboard'
-                goBack.addEventListener('click', () => {
-                    showPage('dashboard');
-                })
-                goBack.setAttribute('style', 'display: block');
-                channelPage.appendChild(goBack);
-
-                document.getElementById('main').appendChild(channelPage);
-            }
-        }
+        alert(msg);
     })
 }
 
 const joinChannel = (channel, globalToken) => {
     apiCallPost(`channel/${channel.id}/join`, {}, globalToken)
     .then((body) => {
-        const publicChannels = document.getElementById('public-channels');
-        const privateChannels = document.getElementById('private-channels');
-
-        createChannelPage(channel, publicChannels, privateChannels, true, globalToken);
+        createChannelPage(channel, true, globalToken);
     })
     .catch((msg) => {
         alert(msg);

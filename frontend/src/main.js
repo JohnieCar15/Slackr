@@ -1,24 +1,59 @@
 import { BACKEND_PORT } from './config.js';
 // A helper you may want to use when uploading new images to the server.
 import { apiCallGet, apiCallPost } from './helpers.js';
-import { createChannelPage } from './channel.js';
+import { createChannelJoinPage, createChannelPage } from './channel.js';
 
 let globalToken = null;
 let globalUserId = null;
+
+const removeAllChildNodes = (parent) => {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
 
 const loadDashboard = () => {
     apiCallGet('channel', globalToken)
     .then((body) => {
         const publicChannels = document.getElementById('public-channels');
-        publicChannels.textContent = '';
+        removeAllChildNodes(publicChannels);
 
         const privateChannels = document.getElementById('private-channels');
-        privateChannels.textContent = '';
+        removeAllChildNodes(privateChannels);
 
         for (const channel of body.channels) {
-            createChannelPage(channel, publicChannels, privateChannels, false, globalToken);
-            console.log(channel);
+            if (channel.members.includes(globalUserId) || !channel.private) {
+                const channelDiv = document.createElement('a');
+                channelDiv.textContent = `${channel.name}`;
+                channelDiv.setAttribute('style', 'display: block');
+                channelDiv.setAttribute('href', '#');
+                channelDiv.addEventListener('click', () => {
+                    showPage(`channel-${channel.id}`)
+                })
+
+                if (channel.private) {
+                    privateChannels.appendChild(channelDiv);
+                } else {
+                    publicChannels.appendChild(channelDiv);
+                }
+                console.log(channel)
+            }
+
+
+            if (!channel.private) {
+                if (channel.members.includes(globalUserId)) {
+                    createChannelPage(channel, false, globalToken);
+                } else {
+                    createChannelJoinPage(channel, globalToken);
+                }
+            } else {
+                if (channel.members.includes(globalUserId)) {
+                    createChannelPage(channel, false, globalToken);
+                }
+            }
         }
+
+
     })
     .catch((msg) => {
         alert(msg);
@@ -51,7 +86,7 @@ document.getElementById('register-submit').addEventListener('click', () => {
         .then((body) => {
             const {token, userId} = body;
             globalToken = token;
-            globalUserId = userId;
+            globalUserId = parseInt(userId);
             localStorage.setItem('token', token);
             localStorage.setItem('userId', userId);
             showPage('dashboard');
@@ -72,7 +107,7 @@ document.getElementById('login-submit').addEventListener('click', () => {
     .then((body) => {
         const {token, userId} = body;
         globalToken = token;
-        globalUserId = userId;
+        globalUserId = parseInt(userId);
         localStorage.setItem('token', token);
         localStorage.setItem('userId', userId);
         showPage('dashboard');

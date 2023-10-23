@@ -1,14 +1,68 @@
 {
   "users": {
-    "65607": {
-      "email": "johniecarino15@gmail.com",
-      "name": "JohnieCar",
+    "27699": {
+      "email": "dcarino1408@gmail.com",
+      "name": "Daniel",
       "password": "69Caroots",
       "bio": null,
       "image": null,
       "sessionActive": false
+    },
+    "97349": {
+      "email": "johniecarino15@gmail.com",
+      "name": "JohnieCarino",
+      "password": "69Caroots",
+      "bio": null,
+      "image": null,
+      "sessionActive": true
     }
   },
-  "channels": {},
+  "channels": {
+    "378311": {
+      "name": "Daniel Carino's Public",
+      "creator": 27699,
+      "private": false,
+      "description": "",
+      "createdAt": "2023-10-23T10:12:23.947Z",
+      "members": [
+        27699
+      ],
+      "messages": []
+    },
+    "424678": {
+      "name": "Johnie Carino's Private",
+      "creator": 97349,
+      "private": true,
+      "description": "",
+      "createdAt": "2023-10-23T10:11:58.585Z",
+      "members": [
+        97349
+      ],
+      "messages": []
+    },
+    "538478": {
+      "name": "Johnie Carino's Public",
+      "creator": 97349,
+      "private": false,
+      "description": "",
+      "createdAt": "2023-10-23T10:11:55.027Z",
+      "members": [
+        97349,
+        27699
+      ],
+      "messages": []
+    },
+    "595370": {
+      "name": "Daniel Carino's Private",
+      "creator": 27699,
+      "private": true,
+      "description": "",
+      "createdAt": "2023-10-23T10:12:18.875Z",
+      "members": [
+        27699
+      ],
+      "messages": []
+    }
+  },
   "nextMessageId": 1
 }
