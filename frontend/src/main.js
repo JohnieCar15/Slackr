@@ -4,8 +4,8 @@ import { apiCallGet, apiCallPost } from './helpers.js';
 import { createChannelJoinPage, createChannelPage } from './channel.js';
 import { getUserName } from './user.js';
 
-let globalToken = null;
-let globalUserId = null;
+export let globalToken = null;
+export let globalUserId = null;
 
 const removeAllChildNodes = (parent) => {
     while (parent.firstChild) {

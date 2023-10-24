@@ -1,8 +1,8 @@
-import { apiCallPost, apiCallGet, apiCallDelete, apiCallPut } from "./helpers.js"
-import { showPage } from "./main.js";
+import { apiCallPost, apiCallGet, apiCallDelete, apiCallPut, convertISOString } from "./helpers.js"
 import { getUserName, getUserImage } from "./user.js";
 
 export const sendMessage = (channel, message, image, messagesDiv, globalUserId, globalToken) => {
+    localStorage.getItem('token');
     if (message.length === 0) {
         return;
     }
@@ -19,7 +19,7 @@ export const sendMessage = (channel, message, image, messagesDiv, globalUserId, 
     })
 }
 
-export const deleteMessage = (channel, message, messageDiv, globalToken) => {
+const deleteMessage = (channel, message, messageDiv, globalToken) => {
     apiCallDelete(`message/${channel.id}/${message.id}`, globalToken)
     .then((body) => {
         messageDiv.remove();
@@ -30,7 +30,7 @@ export const deleteMessage = (channel, message, messageDiv, globalToken) => {
     })
 }
 
-export const editMessage = (channel, oldMessage, newMessage, message, image, messagesDiv, globalUserId, globalToken) => {
+const editMessage = (channel, oldMessage, newMessage, image, messagesDiv, globalUserId, globalToken) => {
     if (oldMessage.message === newMessage.value) {
         return;
     }
@@ -38,6 +38,30 @@ export const editMessage = (channel, oldMessage, newMessage, message, image, mes
     apiCallPut(`message/${channel.id}/${oldMessage.id}`, {
         message: newMessage.value,
         image: image
+    }, globalToken)
+    .then((body) => {
+        getMessages(channel, 0, messagesDiv, globalUserId, globalToken);
+    })
+    .catch((msg) => {
+        alert(msg);
+    })
+}
+
+const reactMessage = (channel, message, react, messagesDiv, globalUserId, globalToken) => {
+    apiCallPost(`message/react/${channel.id}/${message.id}`, {
+        react: react
+    }, globalToken)
+    .then((body) => {
+        getMessages(channel, 0, messagesDiv, globalUserId, globalToken);
+    })
+    .catch((msg) => {
+        alert(msg);
+    })
+}
+
+const unReactMessage = (channel, message, react, messagesDiv, globalUserId, globalToken) => {
+    apiCallPost(`message/unreact/${channel.id}/${message.id}`, {
+        react: react
     }, globalToken)
     .then((body) => {
         getMessages(channel, 0, messagesDiv, globalUserId, globalToken);
@@ -66,7 +90,6 @@ export const getMessages = (channel, index, messagesDiv, globalUserId, globalTok
             const userDiv = document.createElement('div');
             userDiv.style.display = 'flex';
             userDiv.style.alignItems = 'center';
-            userDiv.style.maxWidth = '350px';
             userDiv.style.justifyContent = 'space-between'
 
             const messageProfile = document.createElement('img');
@@ -80,15 +103,107 @@ export const getMessages = (channel, index, messagesDiv, globalUserId, globalTok
 
             const timestamp = document.createElement('p');
 
-            timestamp.textContent = messages[i].sentAt;
+            timestamp.textContent = convertISOString(messages[i].sentAt);
+
+
+
+
             userDiv.appendChild(timestamp);
 
             if (messages[i].edited === true) {
                 const editedDate = document.createElement('p');
-                editedDate.textContent = messages[i].editedAt;
+                editedDate.textContent = 'Edited: ' + convertISOString(messages[i].editedAt);
                 userDiv.appendChild(editedDate);
             }
 
+            const emojiDiv = document.createElement('div');
+            emojiDiv.style.display = 'flex';
+
+            const laughEmojiDiv = document.createElement('div');
+            laughEmojiDiv.style.display = 'flex';
+            laughEmojiDiv.style.flexDirection = 'column';
+            laughEmojiDiv.style.alignItems = 'center';
+            const laughEmoji = document.createElement('a');
+            laughEmoji.textContent = '😂';
+
+            const laughEmojiArr = messages[i].reacts.filter((x) => x.react === '😂');
+
+            laughEmoji.addEventListener('click', () => {
+                if (laughEmojiArr.filter((x) => x.user === globalUserId).length === 1) {
+                    unReactMessage(channel, messages[i], '😂', messagesDiv, globalUserId, globalToken);
+                } else {
+                    reactMessage(channel, messages[i], '😂', messagesDiv, globalUserId, globalToken);
+                }
+
+            })
+
+            laughEmojiDiv.appendChild(laughEmoji);
+            const laughEmojiCounter = document.createElement('p');
+            laughEmojiCounter.textContent = laughEmojiArr.length;
+            laughEmojiDiv.appendChild(laughEmojiCounter);
+
+            emojiDiv.appendChild(laughEmojiDiv);
+
+
+            const loveEmojiDiv = document.createElement('div');
+            loveEmojiDiv.style.display = 'flex';
+            loveEmojiDiv.style.flexDirection = 'column';
+            loveEmojiDiv.style.alignItems = 'center';
+            const loveEmoji = document.createElement('a');
+            loveEmoji.textContent = '😍';
+
+            const loveEmojiArr = messages[i].reacts.filter((x) => x.react === '😍');
+
+            loveEmoji.addEventListener('click', () => {
+                if (loveEmojiArr.filter((x) => x.user === globalUserId).length === 1) {
+                    unReactMessage(channel, messages[i], '😍', messagesDiv, globalUserId, globalToken);
+                } else {
+                    reactMessage(channel, messages[i], '😍', messagesDiv, globalUserId, globalToken);
+                }
+
+            })
+
+            loveEmojiDiv.appendChild(loveEmoji);
+            const loveEmojiCounter = document.createElement('p');
+            loveEmojiCounter.textContent = loveEmojiArr.length;
+            loveEmojiDiv.appendChild(loveEmojiCounter);
+
+            emojiDiv.appendChild(loveEmojiDiv);
+
+
+            const sadEmojiDiv = document.createElement('div');
+            sadEmojiDiv.style.display = 'flex';
+            sadEmojiDiv.style.flexDirection = 'column';
+            sadEmojiDiv.style.alignItems = 'center';
+            const sadEmoji = document.createElement('a');
+            sadEmoji.textContent = '🥲';
+
+            const sadEmojiArr = messages[i].reacts.filter((x) => x.react === '🥲');
+
+            sadEmoji.addEventListener('click', () => {
+                if (sadEmojiArr.filter((x) => x.user === globalUserId).length === 1) {
+                    unReactMessage(channel, messages[i], '🥲', messagesDiv, globalUserId, globalToken);
+                } else {
+                    reactMessage(channel, messages[i], '🥲', messagesDiv, globalUserId, globalToken);
+                }
+
+            })
+
+            sadEmojiDiv.appendChild(sadEmoji);
+            const sadEmojiCounter = document.createElement('p');
+            sadEmojiCounter.textContent = sadEmojiArr.length;
+            sadEmojiDiv.appendChild(sadEmojiCounter);
+
+            emojiDiv.appendChild(sadEmojiDiv);
+
+
+
+
+            userDiv.appendChild(emojiDiv);
+
+            const pinnedDiv = document.createElement('a');
+            pinnedDiv.textContent = '📌';
+            userDiv.appendChild(pinnedDiv);
 
             messageDiv.appendChild(userDiv);
 
@@ -109,7 +224,7 @@ export const getMessages = (channel, index, messagesDiv, globalUserId, globalTok
                 const editMessageSubmit = document.createElement('button');
                 editMessageSubmit.textContent = 'submit'
                 editMessageSubmit.addEventListener('click', () => {
-                    editMessage(channel, messages[i], editMessageVal, message, undefined, messagesDiv, globalUserId, globalToken);
+                    editMessage(channel, messages[i], editMessageVal, undefined, messagesDiv, globalUserId, globalToken);
                 })
                 editMessageDiv.appendChild(editMessageSubmit)
                 messageDiv.appendChild(editMessageDiv);

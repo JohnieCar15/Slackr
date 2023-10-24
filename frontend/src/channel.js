@@ -1,4 +1,4 @@
-import { apiCallGet, apiCallPost, apiCallPut } from './helpers.js';
+import { apiCallGet, apiCallPost, apiCallPut, convertISOString } from './helpers.js';
 import { getUserName } from './user.js';
 import { getMessages, sendMessage } from './message.js';
 import { showPage } from './main.js';
@@ -97,8 +97,7 @@ export const createChannelPage = (channel, isShowPage, globalUserId, globalToken
         createdAtHeader.textContent = `Created at:`;
         channelPage.appendChild(createdAtHeader);
         const createdAt = document.createElement('p');
-        const date = body.createdAt.substring(0,10).split('-');
-        createdAt.textContent = `Created at: ${date[2] + '/' + date[1] + '/' + date[0]}`;
+        createdAt.textContent = convertISOString(body.createdAt);
         channelPage.appendChild(createdAt);
 
         const editNameDiv = document.createElement('div');
