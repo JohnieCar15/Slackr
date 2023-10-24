@@ -27,11 +27,38 @@
   },
   "channels": {
     "249256": {
-      "name": "Johnie's private channel",
+      "name": "Let me edit the name of the channel...",
       "creator": 17881,
       "private": true,
-      "description": "",
+      "description": "This channel has no description?",
       "createdAt": "2023-10-24T00:04:26.200Z",
+      "members": [
+        17881
+      ],
+      "messages": [
+        {
+          "id": 6,
+          "message": "Woah this channel is so empty...",
+          "sender": 17881,
+          "sentAt": "2023-10-24T03:05:11.212Z",
+          "edited": false,
+          "editedAt": null,
+          "pinned": true,
+          "reacts": [
+            {
+              "user": 17881,
+              "react": "😂"
+            }
+          ]
+        }
+      ]
+    },
+    "327041": {
+      "name": "New channel!",
+      "creator": 17881,
+      "private": false,
+      "description": "",
+      "createdAt": "2023-10-24T03:04:33.827Z",
       "members": [
         17881
       ],
@@ -69,7 +96,31 @@
         73787,
         17881
       ],
-      "messages": []
+      "messages": [
+        {
+          "id": 5,
+          "message": "Just kidding, it's ok...",
+          "sender": 17881,
+          "sentAt": "2023-10-24T03:04:47.196Z",
+          "edited": true,
+          "editedAt": "2023-10-24T03:04:58.539Z",
+          "pinned": false,
+          "reacts": [
+            {
+              "user": 17881,
+              "react": "😂"
+            },
+            {
+              "user": 17881,
+              "react": "😍"
+            },
+            {
+              "user": 17881,
+              "react": "🥲"
+            }
+          ]
+        }
+      ]
     },
     "754264": {
       "name": "Daniel Carino's Public",
@@ -96,6 +147,69 @@
         73787
       ],
       "messages": [
+        {
+          "id": 11,
+          "message": "Editing now",
+          "sender": 17881,
+          "sentAt": "2023-10-24T05:40:55.440Z",
+          "edited": true,
+          "editedAt": "2023-10-24T05:41:11.514Z",
+          "pinned": false,
+          "reacts": [
+            {
+              "user": 17881,
+              "react": "😍"
+            },
+            {
+              "user": 17881,
+              "react": "😂"
+            },
+            {
+              "user": 17881,
+              "react": "🥲"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "message": "123",
+          "sender": 17881,
+          "sentAt": "2023-10-24T05:40:29.299Z",
+          "edited": false,
+          "editedAt": null,
+          "pinned": false,
+          "reacts": []
+        },
+        {
+          "id": 9,
+          "message": "Editing now...",
+          "sender": 17881,
+          "sentAt": "2023-10-24T05:38:15.266Z",
+          "edited": true,
+          "editedAt": "2023-10-24T05:40:24.545Z",
+          "pinned": false,
+          "reacts": []
+        },
+        {
+          "id": 8,
+          "message": "sending a message?",
+          "sender": 17881,
+          "sentAt": "2023-10-24T05:36:22.996Z",
+          "edited": false,
+          "editedAt": null,
+          "pinned": false,
+          "reacts": []
+        },
+        {
+          "id": 7,
+          "message": "a",
+          "sender": 17881,
+          "sentAt": "2023-10-24T05:33:57.223Z",
+          "edited": false,
+          "editedAt": null,
+          "pinned": false,
+          "reacts": []
+        },
         {
           "id": 4,
           "message": "Editing my message now",
@@ -125,12 +239,12 @@
         },
         {
           "id": 3,
-          "message": "Just kidding, I like it as well!",
+          "message": "Shut up",
           "sender": 17881,
           "sentAt": "2023-10-24T00:06:59.902Z",
           "edited": true,
-          "editedAt": "2023-10-24T00:07:11.951Z",
-          "pinned": false,
+          "editedAt": "2023-10-24T05:08:29.898Z",
+          "pinned": true,
           "reacts": [
             {
               "user": 17881,
@@ -143,6 +257,10 @@
             {
               "user": 30991,
               "react": "😂"
+            },
+            {
+              "user": 17881,
+              "react": "🥲"
             }
           ]
         },
@@ -179,17 +297,25 @@
           "pinned": false,
           "reacts": [
             {
+              "user": 30991,
+              "react": "😂"
+            },
+            {
+              "user": 17881,
+              "react": "😍"
+            },
+            {
               "user": 17881,
               "react": "😂"
             },
             {
-              "user": 30991,
-              "react": "😂"
+              "user": 17881,
+              "react": "🥲"
             }
           ]
         }
       ]
     }
   },
-  "nextMessageId": 5
+  "nextMessageId": 12
 }

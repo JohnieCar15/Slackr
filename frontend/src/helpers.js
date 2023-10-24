@@ -120,3 +120,13 @@ export const convertISOString = (isoString) => {
     const startDate = new Date(isoString);
     return startDate.toString().substring(4,24);
 }
+
+export const removeAllChildNodes = (parent) => {
+    if (parent === null) {
+        return;
+    }
+
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}

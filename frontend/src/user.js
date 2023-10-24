@@ -1,7 +1,8 @@
 import { apiCallGet, apiCallPost } from './helpers.js';
 import { DEFAULT_PROFILE } from './config.js';
+import { globalToken, globalUserId } from './main.js';
 
-export const getUserName = (userId, creator, globalToken) => {
+export const getUserName = (userId, creator) => {
     apiCallGet(`user/${userId}`, globalToken)
     .then((body) => {
         creator.textContent = body.name;
@@ -11,7 +12,7 @@ export const getUserName = (userId, creator, globalToken) => {
     })
 }
 
-export const getUserImage = (userId, image, globalToken) => {
+export const getUserImage = (userId, image) => {
     apiCallGet(`user/${userId}`, globalToken)
     .then((body) => {
         if (body.image === null) {

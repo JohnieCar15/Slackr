@@ -1,9 +1,11 @@
 import { apiCallGet, apiCallPost, apiCallPut, convertISOString } from './helpers.js';
 import { getUserName } from './user.js';
 import { getMessages, sendMessage } from './message.js';
-import { showPage } from './main.js';
+import { showPage, globalToken, globalUserId } from './main.js';
 
-const editChannel = (channelId, name, description, globalToken) => {
+export let pageCounter = 0;
+
+const editChannel = (channelId, name, description) => {
     const channelName = document.getElementById(`channel-${channelId}-name`)
     const channelDescription = document.getElementById(`channel-${channelId}-description`)
 
@@ -20,7 +22,7 @@ const editChannel = (channelId, name, description, globalToken) => {
     })
 }
 
-export const createChannelJoinPage = (channel, globalUserId, globalToken) => {
+export const createChannelJoinPage = (channel) => {
     const page = document.getElementById(`page-channel-${channel.id}`)
     if (page !== null) {
         page.remove();
@@ -33,7 +35,7 @@ export const createChannelJoinPage = (channel, globalUserId, globalToken) => {
     const joinButton = document.createElement('button');
     joinButton.textContent = 'Join this channel';
     joinButton.addEventListener('click', () => {
-        joinChannel(channel, globalUserId, globalToken);
+        joinChannel(channel, globalUserId);
     })
 
     channelPage.appendChild(joinButton);
@@ -49,9 +51,10 @@ export const createChannelJoinPage = (channel, globalUserId, globalToken) => {
     document.getElementById('main').appendChild(channelPage);
 }
 
-export const createChannelPage = (channel, isShowPage, globalUserId, globalToken) => {
+export const createChannelPage = (channel, isShowPage) => {
     apiCallGet(`channel/${channel.id}`, globalToken)
     .then((body) => {
+        console.log(body);
         const page = document.getElementById(`page-channel-${channel.id}`)
         if (page !== null) {
             page.remove();
@@ -78,7 +81,6 @@ export const createChannelPage = (channel, isShowPage, globalUserId, globalToken
         description.textContent = body.description;
         channelPage.appendChild(description);
 
-
         const isPrivateHeader = document.createElement('h3');
         isPrivateHeader.textContent = `Private/Public channel:`;
         channelPage.appendChild(isPrivateHeader);
@@ -90,7 +92,7 @@ export const createChannelPage = (channel, isShowPage, globalUserId, globalToken
         creatorHeader.textContent = `Creator:`;
         channelPage.appendChild(creatorHeader);
         const creator = document.createElement('p');
-        getUserName(body.creator, creator, globalToken);
+        getUserName(body.creator, creator);
         channelPage.appendChild(creator);
 
         const createdAtHeader = document.createElement('h3');
@@ -113,7 +115,7 @@ export const createChannelPage = (channel, isShowPage, globalUserId, globalToken
         const editNameSubmit = document.createElement('button');
         editNameSubmit.textContent = 'submit'
         editNameSubmit.addEventListener('click', () => {
-            editChannel(channel.id, editName.value, description.textContent, globalToken);
+            editChannel(channel.id, editName.value, description.textContent);
             editName.value = '';
         })
         editNameDiv.appendChild(editNameSubmit)
@@ -132,21 +134,44 @@ export const createChannelPage = (channel, isShowPage, globalUserId, globalToken
         const editDescriptionSubmit = document.createElement('button');
         editDescriptionSubmit.textContent = 'submit'
         editDescriptionSubmit.addEventListener('click', () => {
-            editChannel(channel.id, name.textContent, editDescription.value, globalToken);
+            editChannel(channel.id, name.textContent, editDescription.value);
             editDescription.value = '';
         })
         editDescriptionDiv.appendChild(editDescriptionSubmit)
 
         channelPage.appendChild(editDescriptionDiv);
 
+        const pinnedMessagesDiv = document.createElement('div');
+        pinnedMessagesDiv.style.paddingBottom = '40px';
+
+        channelPage.appendChild(pinnedMessagesDiv);
 
         const messagesDiv = document.createElement('div');
-        messagesDiv.style.border = '1px solid red';
         messagesDiv.style.paddingBottom = '40px';
+
         channelPage.appendChild(messagesDiv);
 
-        getMessages(channel, 0, messagesDiv, globalUserId, globalToken);
+        const pageBackward = document.createElement('button');
+        pageBackward.textContent = 'Previous page';
+        pageBackward.addEventListener('click', () => {
+            if (pageCounter - 25 < 0) {
+                return;
+            }
 
+            getMessages(channel, pageCounter -= 25, messagesDiv, pinnedMessagesDiv);
+        })
+
+        channelPage.appendChild(pageBackward);
+
+        const pageForward = document.createElement('button');
+        pageForward.textContent = 'Next page';
+        pageForward.addEventListener('click', () => {
+            getMessages(channel, pageCounter += 25, messagesDiv, pinnedMessagesDiv);
+        })
+
+        channelPage.appendChild(pageForward);
+
+        getMessages(channel, pageCounter, messagesDiv, pinnedMessagesDiv);
 
         const sendMessagesDiv = document.createElement('div');
         const sendMessageHeader = document.createElement('h3');
@@ -158,7 +183,7 @@ export const createChannelPage = (channel, isShowPage, globalUserId, globalToken
         const sendMessageSubmit = document.createElement('button');
         sendMessageSubmit.textContent = 'submit'
         sendMessageSubmit.addEventListener('click', () => {
-            sendMessage(channel, sendMessageVal.value, undefined, messagesDiv, globalUserId, globalToken);
+            sendMessage(channel, sendMessageVal.value, undefined, messagesDiv, pinnedMessagesDiv);
             sendMessageVal.value = '';
         })
         sendMessagesDiv.appendChild(sendMessageSubmit);
@@ -169,7 +194,7 @@ export const createChannelPage = (channel, isShowPage, globalUserId, globalToken
         const leave = document.createElement('button');
         leave.textContent = 'Leave the channel'
         leave.addEventListener('click', () => {
-            leaveChannel(channel, globalToken);
+            leaveChannel(channel);
         })
         leave.setAttribute('style', 'display: block');
         channelPage.appendChild(leave);
@@ -195,17 +220,17 @@ export const createChannelPage = (channel, isShowPage, globalUserId, globalToken
     })
 }
 
-const joinChannel = (channel, globalUserId, globalToken) => {
+const joinChannel = (channel) => {
     apiCallPost(`channel/${channel.id}/join`, {}, globalToken)
     .then((body) => {
-        createChannelPage(channel, true, globalUserId, globalToken);
+        createChannelPage(channel, true);
     })
     .catch((msg) => {
         alert(msg);
     })
 }
 
-const leaveChannel = (channel, globalToken) => {
+const leaveChannel = (channel) => {
     apiCallPost(`channel/${channel.id}/leave`, {}, globalToken)
     .then((body) => {
         showPage('dashboard');

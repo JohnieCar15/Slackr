@@ -1,17 +1,12 @@
 import { BACKEND_PORT } from './config.js';
 // A helper you may want to use when uploading new images to the server.
-import { apiCallGet, apiCallPost } from './helpers.js';
+import { apiCallGet, apiCallPost, removeAllChildNodes } from './helpers.js';
 import { createChannelJoinPage, createChannelPage } from './channel.js';
 import { getUserName } from './user.js';
 
 export let globalToken = null;
 export let globalUserId = null;
 
-const removeAllChildNodes = (parent) => {
-    while (parent.firstChild) {
-        parent.removeChild(parent.firstChild);
-    }
-}
 
 const loadDashboard = () => {
     apiCallGet('channel', globalToken)
@@ -43,13 +38,13 @@ const loadDashboard = () => {
 
             if (!channel.private) {
                 if (channel.members.includes(globalUserId)) {
-                    createChannelPage(channel, false, globalUserId, globalToken);
+                    createChannelPage(channel, false);
                 } else {
-                    createChannelJoinPage(channel, globalUserId, globalToken);
+                    createChannelJoinPage(channel);
                 }
             } else {
                 if (channel.members.includes(globalUserId)) {
-                    createChannelPage(channel, false, globalUserId, globalToken);
+                    createChannelPage(channel, false);
                 }
             }
         }

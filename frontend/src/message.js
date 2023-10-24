@@ -1,8 +1,9 @@
-import { apiCallPost, apiCallGet, apiCallDelete, apiCallPut, convertISOString } from "./helpers.js"
+import { apiCallPost, apiCallGet, apiCallDelete, apiCallPut, convertISOString, removeAllChildNodes } from "./helpers.js"
 import { getUserName, getUserImage } from "./user.js";
+import { globalToken, globalUserId } from "./main.js";
+import { pageCounter } from "./channel.js";
 
-export const sendMessage = (channel, message, image, messagesDiv, globalUserId, globalToken) => {
-    localStorage.getItem('token');
+export const sendMessage = (channel, message, image, messagesDiv, pinnedMessagesDiv) => {
     if (message.length === 0) {
         return;
     }
@@ -12,14 +13,14 @@ export const sendMessage = (channel, message, image, messagesDiv, globalUserId, 
         image: image
     }, globalToken)
     .then((body) => {
-        getMessages(channel, 0, messagesDiv, globalUserId, globalToken);
+        getMessages(channel, pageCounter, messagesDiv, pinnedMessagesDiv);
     })
     .catch((msg) => {
         alert(msg);
     })
 }
 
-const deleteMessage = (channel, message, messageDiv, globalToken) => {
+const deleteMessage = (channel, message, messageDiv) => {
     apiCallDelete(`message/${channel.id}/${message.id}`, globalToken)
     .then((body) => {
         messageDiv.remove();
@@ -30,7 +31,7 @@ const deleteMessage = (channel, message, messageDiv, globalToken) => {
     })
 }
 
-const editMessage = (channel, oldMessage, newMessage, image, messagesDiv, globalUserId, globalToken) => {
+const editMessage = (channel, oldMessage, newMessage, image, messagesDiv, pinnedMessagesDiv) => {
     if (oldMessage.message === newMessage.value) {
         return;
     }
@@ -40,48 +41,101 @@ const editMessage = (channel, oldMessage, newMessage, image, messagesDiv, global
         image: image
     }, globalToken)
     .then((body) => {
-        getMessages(channel, 0, messagesDiv, globalUserId, globalToken);
+        getMessages(channel, pageCounter, messagesDiv, pinnedMessagesDiv);
     })
     .catch((msg) => {
         alert(msg);
     })
 }
 
-const reactMessage = (channel, message, react, messagesDiv, globalUserId, globalToken) => {
+const reactMessage = (channel, message, react, messagesDiv, pinnedMessagesDiv) => {
     apiCallPost(`message/react/${channel.id}/${message.id}`, {
         react: react
     }, globalToken)
     .then((body) => {
-        getMessages(channel, 0, messagesDiv, globalUserId, globalToken);
+        getMessages(channel, pageCounter, messagesDiv, pinnedMessagesDiv);
     })
     .catch((msg) => {
         alert(msg);
     })
 }
 
-const unReactMessage = (channel, message, react, messagesDiv, globalUserId, globalToken) => {
+const unReactMessage = (channel, message, react, messagesDiv, pinnedMessagesDiv) => {
     apiCallPost(`message/unreact/${channel.id}/${message.id}`, {
         react: react
     }, globalToken)
     .then((body) => {
-        getMessages(channel, 0, messagesDiv, globalUserId, globalToken);
+        getMessages(channel, pageCounter, messagesDiv, pinnedMessagesDiv);
     })
     .catch((msg) => {
         alert(msg);
     })
 }
 
-export const getMessages = (channel, index, messagesDiv, globalUserId, globalToken) => {
-    messagesDiv.textContent = '';
+const pinMessage = (channel, message, messagesDiv, pinnedMessagesDiv) => {
+    apiCallPost(`message/pin/${channel.id}/${message.id}`, {
+    }, globalToken)
+    .then((body) => {
+        getMessages(channel, pageCounter, messagesDiv, pinnedMessagesDiv);
+    })
+    .catch((msg) => {
+        alert(msg);
+    })
+}
+
+const unpinMessage = (channel, message, messagesDiv, pinnedMessagesDiv) => {
+    apiCallPost(`message/unpin/${channel.id}/${message.id}`, {
+    }, globalToken)
+    .then((body) => {
+        getMessages(channel, pageCounter, messagesDiv, pinnedMessagesDiv);
+    })
+    .catch((msg) => {
+        alert(msg);
+    })
+}
+
+const createEmoji = (channel, message, emoji, messagesDiv, pinnedMessagesDiv, emojiDiv) => {
+    const emojiTemplateDiv = document.createElement('div');
+    emojiTemplateDiv.style.display = 'flex';
+    emojiTemplateDiv.style.flexDirection = 'column';
+    emojiTemplateDiv.style.alignItems = 'center';
+    const emojiTemplate = document.createElement('a');
+    emojiTemplate.textContent = emoji;
+
+    const emojiTemplateArr = message.reacts.filter((x) => x.react === emoji);
+
+    emojiTemplate.addEventListener('click', () => {
+        if (emojiTemplateArr.filter((x) => x.user === globalUserId).length === 1) {
+            unReactMessage(channel, message, emoji, messagesDiv, pinnedMessagesDiv);
+        } else {
+            reactMessage(channel, message, emoji, messagesDiv, pinnedMessagesDiv);
+        }
+
+    })
+
+    emojiTemplateDiv.appendChild(emojiTemplate);
+    const emojiTemplateCounter = document.createElement('p');
+    emojiTemplateCounter.textContent = emojiTemplateArr.length;
+    emojiTemplateDiv.appendChild(emojiTemplateCounter);
+
+    emojiDiv.appendChild(emojiTemplateDiv);
+}
+
+export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
+    removeAllChildNodes(messagesDiv);
     const messagesDivHeader = document.createElement('h3');
     messagesDivHeader.textContent = 'Messages';
     messagesDiv.appendChild(messagesDivHeader);
+
+    removeAllChildNodes(pinnedMessagesDiv);
+    const pinnedMessagesDivHeader = document.createElement('h3');
+    pinnedMessagesDivHeader.textContent = 'Pinned Messages';
+    pinnedMessagesDiv.appendChild(pinnedMessagesDivHeader);
 
     apiCallGet(`message/${channel.id}?start=${index}`, globalToken)
     .then((body) => {
         const messages = body.messages.reverse();
         for (let i = 0; i < messages.length; i++) {
-            console.log(messages[i])
             const messageDiv = document.createElement('div');
             messageDiv.style.border = '1px solid black';
             messageDiv.style.paddingBottom = '40px';
@@ -93,19 +147,17 @@ export const getMessages = (channel, index, messagesDiv, globalUserId, globalTok
             userDiv.style.justifyContent = 'space-between'
 
             const messageProfile = document.createElement('img');
-            getUserImage(messages[i].sender, messageProfile, globalToken);
+            getUserImage(messages[i].sender, messageProfile);
             messageProfile.style.maxHeight = '40px';
             userDiv.appendChild(messageProfile);
 
             const creator = document.createElement('p');
-            getUserName(messages[i].sender, creator, globalToken);
+            getUserName(messages[i].sender, creator);
             userDiv.appendChild(creator);
 
             const timestamp = document.createElement('p');
 
             timestamp.textContent = convertISOString(messages[i].sentAt);
-
-
 
 
             userDiv.appendChild(timestamp);
@@ -119,91 +171,24 @@ export const getMessages = (channel, index, messagesDiv, globalUserId, globalTok
             const emojiDiv = document.createElement('div');
             emojiDiv.style.display = 'flex';
 
-            const laughEmojiDiv = document.createElement('div');
-            laughEmojiDiv.style.display = 'flex';
-            laughEmojiDiv.style.flexDirection = 'column';
-            laughEmojiDiv.style.alignItems = 'center';
-            const laughEmoji = document.createElement('a');
-            laughEmoji.textContent = '😂';
-
-            const laughEmojiArr = messages[i].reacts.filter((x) => x.react === '😂');
-
-            laughEmoji.addEventListener('click', () => {
-                if (laughEmojiArr.filter((x) => x.user === globalUserId).length === 1) {
-                    unReactMessage(channel, messages[i], '😂', messagesDiv, globalUserId, globalToken);
-                } else {
-                    reactMessage(channel, messages[i], '😂', messagesDiv, globalUserId, globalToken);
-                }
-
-            })
-
-            laughEmojiDiv.appendChild(laughEmoji);
-            const laughEmojiCounter = document.createElement('p');
-            laughEmojiCounter.textContent = laughEmojiArr.length;
-            laughEmojiDiv.appendChild(laughEmojiCounter);
-
-            emojiDiv.appendChild(laughEmojiDiv);
-
-
-            const loveEmojiDiv = document.createElement('div');
-            loveEmojiDiv.style.display = 'flex';
-            loveEmojiDiv.style.flexDirection = 'column';
-            loveEmojiDiv.style.alignItems = 'center';
-            const loveEmoji = document.createElement('a');
-            loveEmoji.textContent = '😍';
-
-            const loveEmojiArr = messages[i].reacts.filter((x) => x.react === '😍');
-
-            loveEmoji.addEventListener('click', () => {
-                if (loveEmojiArr.filter((x) => x.user === globalUserId).length === 1) {
-                    unReactMessage(channel, messages[i], '😍', messagesDiv, globalUserId, globalToken);
-                } else {
-                    reactMessage(channel, messages[i], '😍', messagesDiv, globalUserId, globalToken);
-                }
-
-            })
-
-            loveEmojiDiv.appendChild(loveEmoji);
-            const loveEmojiCounter = document.createElement('p');
-            loveEmojiCounter.textContent = loveEmojiArr.length;
-            loveEmojiDiv.appendChild(loveEmojiCounter);
-
-            emojiDiv.appendChild(loveEmojiDiv);
-
-
-            const sadEmojiDiv = document.createElement('div');
-            sadEmojiDiv.style.display = 'flex';
-            sadEmojiDiv.style.flexDirection = 'column';
-            sadEmojiDiv.style.alignItems = 'center';
-            const sadEmoji = document.createElement('a');
-            sadEmoji.textContent = '🥲';
-
-            const sadEmojiArr = messages[i].reacts.filter((x) => x.react === '🥲');
-
-            sadEmoji.addEventListener('click', () => {
-                if (sadEmojiArr.filter((x) => x.user === globalUserId).length === 1) {
-                    unReactMessage(channel, messages[i], '🥲', messagesDiv, globalUserId, globalToken);
-                } else {
-                    reactMessage(channel, messages[i], '🥲', messagesDiv, globalUserId, globalToken);
-                }
-
-            })
-
-            sadEmojiDiv.appendChild(sadEmoji);
-            const sadEmojiCounter = document.createElement('p');
-            sadEmojiCounter.textContent = sadEmojiArr.length;
-            sadEmojiDiv.appendChild(sadEmojiCounter);
-
-            emojiDiv.appendChild(sadEmojiDiv);
-
-
+            createEmoji(channel, messages[i], '😍', messagesDiv, pinnedMessagesDiv, emojiDiv);
+            createEmoji(channel, messages[i], '😂', messagesDiv, pinnedMessagesDiv, emojiDiv);
+            createEmoji(channel, messages[i], '🥲', messagesDiv, pinnedMessagesDiv, emojiDiv);
 
 
             userDiv.appendChild(emojiDiv);
 
-            const pinnedDiv = document.createElement('a');
-            pinnedDiv.textContent = '📌';
-            userDiv.appendChild(pinnedDiv);
+            const pinned = document.createElement('a');
+            pinned.textContent = '📌';
+            pinned.addEventListener('click', () => {
+                if (messages[i].pinned) {
+                    unpinMessage(channel, messages[i], messagesDiv, pinnedMessagesDiv);
+                } else {
+                    pinMessage(channel, messages[i], messagesDiv, pinnedMessagesDiv);
+                }
+            })
+
+            userDiv.appendChild(pinned);
 
             messageDiv.appendChild(userDiv);
 
@@ -224,7 +209,7 @@ export const getMessages = (channel, index, messagesDiv, globalUserId, globalTok
                 const editMessageSubmit = document.createElement('button');
                 editMessageSubmit.textContent = 'submit'
                 editMessageSubmit.addEventListener('click', () => {
-                    editMessage(channel, messages[i], editMessageVal, undefined, messagesDiv, globalUserId, globalToken);
+                    editMessage(channel, messages[i], editMessageVal, undefined, messagesDiv, pinnedMessagesDiv);
                 })
                 editMessageDiv.appendChild(editMessageSubmit)
                 messageDiv.appendChild(editMessageDiv);
@@ -232,13 +217,18 @@ export const getMessages = (channel, index, messagesDiv, globalUserId, globalTok
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete message';
                 deleteButton.addEventListener('click', () => {
-                    deleteMessage(channel, messages[i], messageDiv, globalToken);
+                    deleteMessage(channel, messages[i], messageDiv);
                 })
                 messageDiv.appendChild(deleteButton);
 
             }
 
+
             messagesDiv.appendChild(messageDiv);
+
+            if (messages[i].pinned) {
+                pinnedMessagesDiv.appendChild(messageDiv);
+            }
         }
 
     })
