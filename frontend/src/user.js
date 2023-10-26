@@ -72,10 +72,10 @@ export const createUserProfile = (userId) => {
         if (userId === globalUserId) {
             const editDetails = document.createElement('form');
 
-            const editName = addFormComponent('name', '', userId)
+            const editName = addFormComponent('name', 'text', userId)
             editDetails.appendChild(editName)
 
-            const editBio = addFormComponent('bio', '', userId)
+            const editBio = addFormComponent('bio', 'text', userId)
             editDetails.appendChild(editBio)
 
             const editEmail = addFormComponent('email', 'email', userId)
@@ -88,6 +88,10 @@ export const createUserProfile = (userId) => {
 
             const editPasswordConfirm = addFormComponent('confirmPassword', 'password', userId)
             editDetails.appendChild(editPasswordConfirm)
+
+            const file = addFormComponent('file', 'file', userId)
+            editDetails.appendChild(file)
+
 
             userDiv.appendChild(editDetails);
         }
@@ -110,26 +114,33 @@ export const createUserProfile = (userId) => {
 
 const addFormComponent = (name, type, userId) => {
     const mainDiv = document.createElement('div');
-    mainDiv.classList.add('input-group')
     mainDiv.classList.add('mb-3')
 
+    const label = document.createElement('label');
+    label.setAttribute('for', `${name}-${userId}`)
+    label.classList.add('form-label')
+    label.textContent = name;
+
+    mainDiv.appendChild(label);
+
+    const inputDiv = document.createElement('div');
+    inputDiv.classList.add('input-group')
+
     const input = document.createElement('input');
+    input.id = `${name}-${userId}`
     input.classList.add('form-control');
-    input.setAttribute('aria-describedby', `${userId}-bruh`)
     input.setAttribute('type', type)
-    mainDiv.appendChild(input);
+    inputDiv.appendChild(input);
 
-    const toggleDiv = document.createElement('div');
-    toggleDiv.classList.add('input-group-append')
+    if (type == 'password') {
+        const toggle = document.createElement('i');
+        toggle.classList.add('bi');
+        toggle.classList.add('bi-eye-slash')
+        toggle.classList.add('input-group-text')
+        inputDiv.appendChild(toggle)
+    }
 
-
-    const toggle = document.createElement('span');
-    toggle.id = `${userId}-bruh`
-    // toggle.classList.add('bi')
-    // toggle.classList.add('bi-eye-slash')
-    toggle.textContent = 'WTF!!!'
-    toggleDiv.appendChild(toggle);
-    mainDiv.appendChild(toggleDiv)
+    mainDiv.appendChild(inputDiv)
 
 
     return mainDiv;
