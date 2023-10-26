@@ -1,6 +1,6 @@
 {
   "users": {
-    "17881": {
+    "35262": {
       "email": "johniecarino15@gmail.com",
       "name": "JohnieCar",
       "password": "69Caroots",
@@ -8,17 +8,17 @@
       "image": null,
       "sessionActive": true
     },
-    "30991": {
-      "email": "danielcarino@gmail.com",
-      "name": "DanielCar",
+    "54158": {
+      "email": "angelacarino@gmail.com",
+      "name": "DannyBoy",
       "password": "69Caroots",
       "bio": null,
       "image": null,
       "sessionActive": false
     },
-    "73787": {
-      "email": "angelacarino@gmail.com",
-      "name": "Angela",
+    "71068": {
+      "email": "danielcarino@gmail.com",
+      "name": "DannyBoy",
       "password": "69Caroots",
       "bio": null,
       "image": null,
@@ -26,296 +26,69 @@
     }
   },
   "channels": {
-    "249256": {
-      "name": "Let me edit the name of the channel...",
-      "creator": 17881,
-      "private": true,
-      "description": "This channel has no description?",
-      "createdAt": "2023-10-24T00:04:26.200Z",
+    "147089": {
+      "name": "BruhClan",
+      "creator": 35262,
+      "private": false,
+      "description": "Bruhiest of bruhs",
+      "createdAt": "2023-10-26T08:22:12.809Z",
       "members": [
-        17881
+        35262,
+        54158,
+        71068
       ],
       "messages": [
-        {
-          "id": 6,
-          "message": "Woah this channel is so empty...",
-          "sender": 17881,
-          "sentAt": "2023-10-24T03:05:11.212Z",
-          "edited": false,
-          "editedAt": null,
-          "pinned": true,
-          "reacts": [
-            {
-              "user": 17881,
-              "react": "😂"
-            }
-          ]
-        }
-      ]
-    },
-    "327041": {
-      "name": "New channel!",
-      "creator": 17881,
-      "private": false,
-      "description": "",
-      "createdAt": "2023-10-24T03:04:33.827Z",
-      "members": [
-        17881
-      ],
-      "messages": []
-    },
-    "557433": {
-      "name": "Daniel's private channel",
-      "creator": 30991,
-      "private": true,
-      "description": "",
-      "createdAt": "2023-10-24T00:05:13.424Z",
-      "members": [
-        30991
-      ],
-      "messages": []
-    },
-    "591740": {
-      "name": "angela's private",
-      "creator": 73787,
-      "private": true,
-      "description": "",
-      "createdAt": "2023-10-24T00:05:48.380Z",
-      "members": [
-        73787
-      ],
-      "messages": []
-    },
-    "653027": {
-      "name": "Angela's public",
-      "creator": 73787,
-      "private": false,
-      "description": "",
-      "createdAt": "2023-10-24T00:05:54.025Z",
-      "members": [
-        73787,
-        17881
-      ],
-      "messages": [
-        {
-          "id": 5,
-          "message": "Just kidding, it's ok...",
-          "sender": 17881,
-          "sentAt": "2023-10-24T03:04:47.196Z",
-          "edited": true,
-          "editedAt": "2023-10-24T03:04:58.539Z",
-          "pinned": false,
-          "reacts": [
-            {
-              "user": 17881,
-              "react": "😂"
-            },
-            {
-              "user": 17881,
-              "react": "😍"
-            },
-            {
-              "user": 17881,
-              "react": "🥲"
-            }
-          ]
-        }
-      ]
-    },
-    "754264": {
-      "name": "Daniel Carino's Public",
-      "creator": 30991,
-      "private": false,
-      "description": "",
-      "createdAt": "2023-10-24T00:04:42.898Z",
-      "members": [
-        30991,
-        73787,
-        17881
-      ],
-      "messages": []
-    },
-    "765457": {
-      "name": "Johnie's public channel",
-      "creator": 17881,
-      "private": false,
-      "description": "",
-      "createdAt": "2023-10-24T00:04:12.671Z",
-      "members": [
-        17881,
-        30991,
-        73787
-      ],
-      "messages": [
-        {
-          "id": 11,
-          "message": "Editing now",
-          "sender": 17881,
-          "sentAt": "2023-10-24T05:40:55.440Z",
-          "edited": true,
-          "editedAt": "2023-10-24T05:41:11.514Z",
-          "pinned": false,
-          "reacts": [
-            {
-              "user": 17881,
-              "react": "😍"
-            },
-            {
-              "user": 17881,
-              "react": "😂"
-            },
-            {
-              "user": 17881,
-              "react": "🥲"
-            }
-          ]
-        },
-        {
-          "id": 10,
-          "message": "123",
-          "sender": 17881,
-          "sentAt": "2023-10-24T05:40:29.299Z",
-          "edited": false,
-          "editedAt": null,
-          "pinned": false,
-          "reacts": []
-        },
-        {
-          "id": 9,
-          "message": "Editing now...",
-          "sender": 17881,
-          "sentAt": "2023-10-24T05:38:15.266Z",
-          "edited": true,
-          "editedAt": "2023-10-24T05:40:24.545Z",
-          "pinned": false,
-          "reacts": []
-        },
-        {
-          "id": 8,
-          "message": "sending a message?",
-          "sender": 17881,
-          "sentAt": "2023-10-24T05:36:22.996Z",
-          "edited": false,
-          "editedAt": null,
-          "pinned": false,
-          "reacts": []
-        },
-        {
-          "id": 7,
-          "message": "a",
-          "sender": 17881,
-          "sentAt": "2023-10-24T05:33:57.223Z",
-          "edited": false,
-          "editedAt": null,
-          "pinned": false,
-          "reacts": []
-        },
-        {
-          "id": 4,
-          "message": "Editing my message now",
-          "sender": 17881,
-          "sentAt": "2023-10-24T00:44:22.845Z",
-          "edited": true,
-          "editedAt": "2023-10-24T00:49:33.322Z",
-          "pinned": false,
-          "reacts": [
-            {
-              "user": 17881,
-              "react": "😂"
-            },
-            {
-              "user": 17881,
-              "react": "🥲"
-            },
-            {
-              "user": 30991,
-              "react": "🥲"
-            },
-            {
-              "user": 30991,
-              "react": "😍"
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "message": "Shut up",
-          "sender": 17881,
-          "sentAt": "2023-10-24T00:06:59.902Z",
-          "edited": true,
-          "editedAt": "2023-10-24T05:08:29.898Z",
-          "pinned": true,
-          "reacts": [
-            {
-              "user": 17881,
-              "react": "😂"
-            },
-            {
-              "user": 17881,
-              "react": "😍"
-            },
-            {
-              "user": 30991,
-              "react": "😂"
-            },
-            {
-              "user": 17881,
-              "react": "🥲"
-            }
-          ]
-        },
-        {
-          "id": 2,
-          "message": "I like Johnie's channel also!",
-          "sender": 73787,
-          "sentAt": "2023-10-24T00:05:37.372Z",
-          "edited": false,
-          "editedAt": null,
-          "pinned": false,
-          "reacts": [
-            {
-              "user": 17881,
-              "react": "😂"
-            },
-            {
-              "user": 17881,
-              "react": "😍"
-            },
-            {
-              "user": 30991,
-              "react": "😍"
-            }
-          ]
-        },
         {
           "id": 1,
-          "message": "I like Johnie's channel!",
-          "sender": 30991,
-          "sentAt": "2023-10-24T00:05:01.548Z",
+          "message": "Sending a message",
+          "sender": 35262,
+          "sentAt": "2023-10-26T08:23:24.166Z",
           "edited": false,
           "editedAt": null,
           "pinned": false,
-          "reacts": [
-            {
-              "user": 30991,
-              "react": "😂"
-            },
-            {
-              "user": 17881,
-              "react": "😍"
-            },
-            {
-              "user": 17881,
-              "react": "😂"
-            },
-            {
-              "user": 17881,
-              "react": "🥲"
-            }
-          ]
+          "reacts": []
         }
       ]
+    },
+    "635381": {
+      "name": "Johnie's public",
+      "creator": 35262,
+      "private": false,
+      "description": "",
+      "createdAt": "2023-10-26T08:16:00.264Z",
+      "members": [
+        35262,
+        54158,
+        71068
+      ],
+      "messages": []
+    },
+    "736731": {
+      "name": "Anegla's server",
+      "creator": 54158,
+      "private": false,
+      "description": "",
+      "createdAt": "2023-10-26T08:16:49.186Z",
+      "members": [
+        54158,
+        35262,
+        71068
+      ],
+      "messages": []
+    },
+    "860836": {
+      "name": "Johnie's private",
+      "creator": 35262,
+      "private": true,
+      "description": "",
+      "createdAt": "2023-10-26T08:16:06.225Z",
+      "members": [
+        35262,
+        54158,
+        71068
+      ],
+      "messages": []
     }
   },
-  "nextMessageId": 12
+  "nextMessageId": 2
 }

@@ -1,59 +1,147 @@
 import { BACKEND_PORT } from './config.js';
 // A helper you may want to use when uploading new images to the server.
 import { apiCallGet, apiCallPost, removeAllChildNodes } from './helpers.js';
-import { createChannelJoinPage, createChannelPage } from './channel.js';
-import { getUserName } from './user.js';
+import { createChannelJoinPage, createChannelPage, inviteToChannel } from './channel.js';
+import { getUserName, getAllUsers, createUserProfile } from './user.js';
 
 export let globalToken = null;
 export let globalUserId = null;
 
 
 const loadDashboard = () => {
-    apiCallGet('channel', globalToken)
+    const inviteModal = document.getElementById('inviteModal');
+    inviteModal.textContent = '';
+
+
+    apiCallGet('user', globalToken)
     .then((body) => {
-        const publicChannels = document.getElementById('public-channels');
-        removeAllChildNodes(publicChannels);
+        const usersHeader = document.createElement('h1');
+        usersHeader.classList.add('fs-6')
+        usersHeader.textContent = 'Available users:';
+        inviteModal.appendChild(usersHeader);
 
-        const privateChannels = document.getElementById('private-channels');
-        removeAllChildNodes(privateChannels);
+        const users = body.users;
 
-        for (const channel of body.channels) {
-            // console.log(channel);
-            if (channel.members.includes(globalUserId) || !channel.private) {
-                const channelDiv = document.createElement('a');
-                channelDiv.textContent = `${channel.name}`;
-                channelDiv.setAttribute('style', 'display: block');
-                channelDiv.setAttribute('href', '#');
-                channelDiv.addEventListener('click', () => {
-                    showPage(`channel-${channel.id}`)
-                })
-
-                if (channel.private) {
-                    privateChannels.appendChild(channelDiv);
-                } else {
-                    publicChannels.appendChild(channelDiv);
-                }
-            }
+        for (let i = 0; i < users.length; i++) {
+            createUserProfile(users[i].id);
 
 
-            if (!channel.private) {
-                if (channel.members.includes(globalUserId)) {
-                    createChannelPage(channel, false);
-                } else {
-                    createChannelJoinPage(channel);
-                }
-            } else {
-                if (channel.members.includes(globalUserId)) {
-                    createChannelPage(channel, false);
-                }
+            if (users[i].id !== globalUserId) {
+                const userDiv = document.createElement('div');
+                userDiv.classList.add('form-check');
+
+                const userCheckbox = document.createElement('input');
+                userCheckbox.classList.add('form-check-input');
+                userCheckbox.classList.add('user-checkbox');
+                userCheckbox.setAttribute('user-id', users[i].id)
+                userCheckbox.type = 'checkbox';
+                userCheckbox.id = `modal-checkbox-${users[i].id}`
+
+                userDiv.appendChild(userCheckbox);
+
+                const userLabel = document.createElement('label');
+                userLabel.classList.add('form-check-label');
+                userLabel.setAttribute('for', `modal-checkbox-${users[i].id}`);
+                getUserName(users[i].id, userLabel);
+                userDiv.appendChild(userLabel);
+
+                inviteModal.appendChild(userDiv);
             }
         }
 
+        apiCallGet('channel', globalToken)
+        .then((body) => {
+            const publicChannels = document.getElementById('public-channels');
+            removeAllChildNodes(publicChannels);
 
+            const privateChannels = document.getElementById('private-channels');
+            removeAllChildNodes(privateChannels);
+
+            const channelsHeader = document.createElement('h1');
+            channelsHeader.classList.add('fs-6')
+            channelsHeader.textContent = 'Available channels:';
+            inviteModal.appendChild(channelsHeader);
+
+            for (const channel of body.channels) {
+                // console.log(channel);
+                if (channel.members.includes(globalUserId) || !channel.private) {
+                    const channelDiv = document.createElement('a');
+                    channelDiv.textContent = `${channel.name}`;
+                    channelDiv.setAttribute('style', 'display: block');
+                    channelDiv.setAttribute('href', '#');
+                    channelDiv.addEventListener('click', () => {
+                        showPage(`channel-${channel.id}`)
+                    })
+
+                    if (channel.private) {
+                        privateChannels.appendChild(channelDiv);
+                    } else {
+                        publicChannels.appendChild(channelDiv);
+                    }
+
+                    const channeModalDiv = document.createElement('div');
+                    channeModalDiv.classList.add('form-check');
+
+                    const channelModalInput = document.createElement('input');
+                    channelModalInput.classList.add('form-check-input');
+                    channelModalInput.classList.add('channel-radio');
+                    channelModalInput.setAttribute('channel-id', channel.id);
+                    channelModalInput.type = 'radio';
+                    channelModalInput.name = 'modal-radio';
+                    channelModalInput.id = `modal-radio-${channel.id}`;
+
+                    channeModalDiv.appendChild(channelModalInput);
+
+                    const channelModalLabel = document.createElement('label');
+                    channelModalLabel.classList.add('form-check-label');
+                    channelModalLabel.setAttribute('for', `modal-radio-${channel.id}`);
+                    channelModalLabel.textContent = channel.name;
+
+                    channeModalDiv.appendChild(channelModalLabel);
+
+                    inviteModal.appendChild(channeModalDiv);
+
+                }
+
+
+                if (!channel.private) {
+                    if (channel.members.includes(globalUserId)) {
+                        createChannelPage(channel, false);
+                    } else {
+                        createChannelJoinPage(channel);
+                    }
+                } else {
+                    if (channel.members.includes(globalUserId)) {
+                        createChannelPage(channel, false);
+                    }
+                }
+
+            }
+
+            const inviteModalSubmit = document.createElement('button');
+            inviteModalSubmit.classList.add('btn');
+            inviteModalSubmit.classList.add('btn-primary');
+            inviteModalSubmit.textContent = 'Submit'
+            inviteModalSubmit.addEventListener('click', () => {
+                inviteToChannel();
+                inviteModalSubmit.classList.remove('btn-primary');
+                inviteModalSubmit.classList.add('btn-success');
+            })
+
+            inviteModal.appendChild(inviteModalSubmit);
+
+
+        })
+        .catch((msg) => {
+            alert(msg);
+        })
     })
     .catch((msg) => {
         alert(msg);
     })
+
+
+
 };
 
 export const showPage = (pageName) => {
@@ -140,6 +228,10 @@ document.getElementById('create-channel-submit').addEventListener('click', () =>
         showPage('dashboard');
     });
 });
+
+document.getElementById('profile').addEventListener('click', () => {
+    showPage(`user-${globalUserId}`)
+})
 
 for (const redirect of document.querySelectorAll('.redirect')) {
     const newPage = redirect.getAttribute('redirect');

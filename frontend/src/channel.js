@@ -63,6 +63,7 @@ export const createChannelPage = (channel, isShowPage) => {
         const channelPage = document.createElement('div');
         channelPage.id = `page-channel-${channel.id}`
         channelPage.classList.add('page-block');
+        channelPage.classList.add('container')
 
         const nameHeader = document.createElement('h3');
         nameHeader.textContent = `Channel name:`;
@@ -103,7 +104,6 @@ export const createChannelPage = (channel, isShowPage) => {
         channelPage.appendChild(createdAt);
 
         const editNameDiv = document.createElement('div');
-        editNameDiv.style.border = '1px solid black';
         editNameDiv.style.paddingBottom = '40px';
         editNameDiv.style.marginBottom = '10px';
 
@@ -123,7 +123,6 @@ export const createChannelPage = (channel, isShowPage) => {
         channelPage.appendChild(editNameDiv);
 
         const editDescriptionDiv = document.createElement('div');
-        editDescriptionDiv.style.border = '1px solid black';
         editDescriptionDiv.style.paddingBottom = '40px';
 
         const editDescriptionHeader = document.createElement('h3');
@@ -238,4 +237,22 @@ const leaveChannel = (channel) => {
     .catch((msg) => {
         alert(msg);
     })
+}
+
+export const inviteToChannel = () => {
+    for (const checkbox of document.querySelectorAll('.user-checkbox')) {
+        for (const radio of document.querySelectorAll('.channel-radio')) {
+            if (checkbox.checked && radio.checked) {
+                apiCallPost(`channel/${radio.getAttribute('channel-id')}/invite`, {
+                    userId: parseInt(checkbox.getAttribute('user-id'))
+                }, globalToken)
+                .then((body) => {
+                })
+                .catch((msg) => {
+                    alert(msg);
+                })
+            }
+
+        }
+    }
 }

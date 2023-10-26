@@ -1,6 +1,6 @@
 import { apiCallPost, apiCallGet, apiCallDelete, apiCallPut, convertISOString, removeAllChildNodes } from "./helpers.js"
 import { getUserName, getUserImage } from "./user.js";
-import { globalToken, globalUserId } from "./main.js";
+import { globalToken, globalUserId, showPage } from "./main.js";
 import { pageCounter } from "./channel.js";
 
 export const sendMessage = (channel, message, image, messagesDiv, pinnedMessagesDiv) => {
@@ -137,39 +137,54 @@ export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
         const messages = body.messages.reverse();
         for (let i = 0; i < messages.length; i++) {
             const messageDiv = document.createElement('div');
-            messageDiv.style.border = '1px solid black';
             messageDiv.style.paddingBottom = '40px';
             messageDiv.style.marginBottom = '20px';
+            messageDiv.classList.add('container', 'bg-light', 'bg-gradient');
 
             const userDiv = document.createElement('div');
-            userDiv.style.display = 'flex';
-            userDiv.style.alignItems = 'center';
-            userDiv.style.justifyContent = 'space-between'
+            userDiv.classList.add('d-flex', 'justify-content-between')
+            // userDiv.style.display = 'flex';
+            // userDiv.style.alignItems = 'center';
+            // userDiv.style.justifyContent = 'space-between'
+
+            const userDivProfile = document.createElement('div');
+            userDivProfile.classList.add('container', 'd-flex')
 
             const messageProfile = document.createElement('img');
             getUserImage(messages[i].sender, messageProfile);
             messageProfile.style.maxHeight = '40px';
-            userDiv.appendChild(messageProfile);
+            userDivProfile.appendChild(messageProfile);
 
-            const creator = document.createElement('p');
+            const creator = document.createElement('a');
             getUserName(messages[i].sender, creator);
-            userDiv.appendChild(creator);
+            creator.addEventListener('click', () => {
+                showPage(`user-${messages[i].sender}`)
+            })
+
+
+
+
+            userDivProfile.appendChild(creator);
+
+            userDiv.appendChild(userDivProfile);
 
             const timestamp = document.createElement('p');
+            timestamp.classList.add('container')
 
             timestamp.textContent = convertISOString(messages[i].sentAt);
 
 
             userDiv.appendChild(timestamp);
 
+            const editedDate = document.createElement('p');
+            editedDate.classList.add('container')
             if (messages[i].edited === true) {
-                const editedDate = document.createElement('p');
                 editedDate.textContent = 'Edited: ' + convertISOString(messages[i].editedAt);
-                userDiv.appendChild(editedDate);
             }
+            userDiv.appendChild(editedDate);
 
             const emojiDiv = document.createElement('div');
-            emojiDiv.style.display = 'flex';
+            emojiDiv.classList.add('container', 'd-flex');
 
             createEmoji(channel, messages[i], '😍', messagesDiv, pinnedMessagesDiv, emojiDiv);
             createEmoji(channel, messages[i], '😂', messagesDiv, pinnedMessagesDiv, emojiDiv);
@@ -179,6 +194,7 @@ export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
             userDiv.appendChild(emojiDiv);
 
             const pinned = document.createElement('a');
+            pinned.classList.add('container')
             pinned.textContent = '📌';
             pinned.addEventListener('click', () => {
                 if (messages[i].pinned) {
@@ -215,7 +231,8 @@ export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
                 messageDiv.appendChild(editMessageDiv);
 
                 const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete message';
+                deleteButton.textContent = 'Delete';
+                deleteButton.classList.add('btn', 'btn-danger')
                 deleteButton.addEventListener('click', () => {
                     deleteMessage(channel, messages[i], messageDiv);
                 })
