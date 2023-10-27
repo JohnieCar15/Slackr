@@ -1,11 +1,10 @@
-import { apiCallPost, apiCallGet, apiCallDelete, apiCallPut, convertISOString, removeAllChildNodes } from "./helpers.js"
+import { apiCallPost, apiCallGet, apiCallDelete, apiCallPut, fileToDataUrl, convertISOString, removeAllChildNodes } from "./helpers.js"
 import { getUserName, getUserImage, createFormComponent } from "./user.js";
 import { globalToken, globalUserId, showPage } from "./main.js";
 import { pageCounter } from "./channel.js";
-import { DEFAULT_PROFILE } from "./config.js";
 
 export const sendMessage = (channel, message, image, messagesDiv, pinnedMessagesDiv) => {
-    if (message.length === 0 && image === '') {
+    if (message.length === 0 && image === undefined) {
         return;
     }
 
@@ -21,25 +20,33 @@ export const sendMessage = (channel, message, image, messagesDiv, pinnedMessages
     })
 }
 
-const deleteMessage = (channel, message, messageDiv) => {
+const deleteMessage = (channel, message, messageDiv, messagesDiv, pinnedMessagesDiv) => {
     apiCallDelete(`message/${channel.id}/${message.id}`, globalToken)
     .then((body) => {
         messageDiv.remove();
-
+        getMessages(channel, pageCounter, messagesDiv, pinnedMessagesDiv);
     })
     .catch((msg) => {
         alert(msg);
     })
 }
 
-const editMessage = (channel, oldMessage, newMessage, image, messagesDiv, pinnedMessagesDiv) => {
-    if (oldMessage.message === newMessage.value) {
+const editMessage = (channel, messageId, messages, images, messagesDiv, pinnedMessagesDiv) => {
+    if (messages[0] === messages[1]) {
         return;
     }
 
-    apiCallPut(`message/${channel.id}/${oldMessage.id}`, {
-        message: newMessage.value,
-        image: image
+    if (images[0] === images[1] && (images[1] !== undefined)) {
+        return;
+    }
+
+    if (messages[1] === '' && images[1] === undefined) {
+        return;
+    }
+
+    apiCallPut(`message/${channel.id}/${messageId}`, {
+        message: messages[1] === '' ? undefined : messages[1],
+        image: images[1]
     }, globalToken)
     .then((body) => {
         getMessages(channel, pageCounter, messagesDiv, pinnedMessagesDiv);
@@ -214,6 +221,12 @@ export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
                 image.style.height = '50px'
                 image.style.width = '50px'
                 image.classList.add('img-thumbnail')
+                const prevModal = document.getElementById(`modal-${channel.id}-${photoCounter}`)
+
+                if (prevModal !== null) {
+                    prevModal.remove();
+                }
+
                 createModal(channel, messages[i].image, photoCounter, maxPhotoCounter)
                 image.setAttribute('data-bs-toggle', 'modal')
                 image.setAttribute('data-bs-target', `#modal-${channel.id}-${photoCounter}`)
@@ -227,22 +240,41 @@ export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
                 const editMessageVal = createFormComponent('Edit message', 'text')
                 messageDiv.appendChild(editMessageVal[0])
 
+                const editImage = createFormComponent('Edit image', 'file')
+                messageDiv.appendChild(editImage[0])
+
+
                 const buttonDiv = document.createElement('div');
                 buttonDiv.classList.add('d-flex')
                 buttonDiv.classList.add('justify-content-between')
 
                 const editMessageSubmit = document.createElement('button');
-                editMessageSubmit.textContent = 'Submit'
+                editMessageSubmit.textContent = 'Edit'
+                editMessageSubmit.classList.add('btn', 'btn-outline-primary')
                 editMessageSubmit.addEventListener('click', () => {
-                    editMessage(channel, messages[i], editMessageVal[1], undefined, messagesDiv, pinnedMessagesDiv);
+                    try {
+                        fileToDataUrl(editImage[1].files[0]).then((image) => {
+                        editMessage(channel, messages[i].id, [messages[i].message, editMessageVal[1].value], [messages[i].image, image], messagesDiv, pinnedMessagesDiv);
+                        editMessageVal[1].value = '';
+                        })
+                        .catch((msg) => {
+                            alert(msg)
+                        })
+                    } catch(err) {
+                        if (editImage[1].files[0] === undefined) {
+                            editMessage(channel, messages[i].id, [messages[i].message, editMessageVal[1].value], [undefined, undefined], messagesDiv, pinnedMessagesDiv);
+                        } else {
+                            alert(err)
+                        }
+                    }
                 })
                 buttonDiv.appendChild(editMessageSubmit)
 
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
-                deleteButton.classList.add('btn', 'btn-danger')
+                deleteButton.classList.add('btn', 'btn-outline-danger')
                 deleteButton.addEventListener('click', () => {
-                    deleteMessage(channel, messages[i], messageDiv);
+                    deleteMessage(channel, messages[i], messageDiv, messagesDiv, pinnedMessagesDiv);
                 })
                 buttonDiv.appendChild(deleteButton);
 

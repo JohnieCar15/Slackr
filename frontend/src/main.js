@@ -2,19 +2,21 @@ import { BACKEND_PORT } from './config.js';
 // A helper you may want to use when uploading new images to the server.
 import { apiCallGet, apiCallPost, removeAllChildNodes } from './helpers.js';
 import { createChannelJoinPage, createChannelPage, inviteToChannel } from './channel.js';
-import { getUserName, getAllUsers, createUserProfile } from './user.js';
+import { getUserName, createUserProfile } from './user.js';
 
 export let globalToken = null;
 export let globalUserId = null;
 
 
-export const loadDashboard = () => {
+const loadDashboard = () => {
+    // Invite modal
     const inviteModal = document.getElementById('inviteModal');
     inviteModal.textContent = '';
 
 
     apiCallGet('user', globalToken)
     .then((body) => {
+        // Append all available users to invite modal
         const usersHeader = document.createElement('h1');
         usersHeader.classList.add('fs-6')
         usersHeader.textContent = 'Available users:';
@@ -26,6 +28,7 @@ export const loadDashboard = () => {
             createUserProfile(users[i].id);
 
             if (users[i].id !== globalUserId) {
+                // Append user with checkbox to allow multiple to join channel
                 const userDiv = document.createElement('div');
                 userDiv.classList.add('form-check');
 
@@ -56,12 +59,14 @@ export const loadDashboard = () => {
             const privateChannels = document.getElementById('private-channels');
             removeAllChildNodes(privateChannels);
 
+            // Create channel header for invite modal
             const channelsHeader = document.createElement('h1');
             channelsHeader.classList.add('fs-6')
             channelsHeader.textContent = 'Available channels:';
             inviteModal.appendChild(channelsHeader);
 
             for (const channel of body.channels) {
+                // Create anchor tag to access channel
                 if (channel.members.includes(globalUserId) || !channel.private) {
                     const channelDiv = document.createElement('a');
                     channelDiv.textContent = `${channel.name}`;
@@ -71,12 +76,15 @@ export const loadDashboard = () => {
                         showPage(`channel-${channel.id}`)
                     })
 
+
+                    // Append correct tags to headers
                     if (channel.private) {
                         privateChannels.appendChild(channelDiv);
                     } else {
                         publicChannels.appendChild(channelDiv);
                     }
 
+                    // Append channels to modal
                     const channeModalDiv = document.createElement('div');
                     channeModalDiv.classList.add('form-check');
 
@@ -101,7 +109,7 @@ export const loadDashboard = () => {
 
                 }
 
-
+                // Create pages
                 if (!channel.private) {
                     if (channel.members.includes(globalUserId)) {
                         createChannelPage(channel, false);
@@ -116,6 +124,7 @@ export const loadDashboard = () => {
 
             }
 
+            // Add submit button to invite modal
             const inviteModalSubmit = document.createElement('button');
             inviteModalSubmit.classList.add('btn');
             inviteModalSubmit.classList.add('btn-primary');
@@ -142,6 +151,7 @@ export const loadDashboard = () => {
 
 };
 
+// Show relevant pages
 export const showPage = (pageName) => {
     for (const page of document.querySelectorAll('.page-block')) {
         page.style.display = 'none';
@@ -149,9 +159,15 @@ export const showPage = (pageName) => {
     document.getElementById(`page-${pageName}`).style.display = 'block';
     if (pageName === 'dashboard') {
         loadDashboard();
+        document.getElementById('show-dashboard').style.display = 'block';
+        document.getElementById('show-profile').style.display = 'block';
+    } else if (pageName === 'register') {
+        document.getElementById('show-dashboard').style.display = 'none';
+        document.getElementById('show-profile').style.display = 'none';
     }
 }
 
+// Allow users to register
 document.getElementById('register-submit').addEventListener('click', () => {
     const email = document.getElementById('register-email').value;
     const name = document.getElementById('register-name').value;
@@ -179,6 +195,7 @@ document.getElementById('register-submit').addEventListener('click', () => {
     }
 });
 
+// Allow users to login
 document.getElementById('login-submit').addEventListener('click', () => {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
@@ -200,6 +217,7 @@ document.getElementById('login-submit').addEventListener('click', () => {
 
 });
 
+// Allow users to log out
 document.getElementById('logout').addEventListener('click', () => {
     apiCallPost('auth/logout', {}, globalToken)
     .then(() => {
@@ -209,6 +227,7 @@ document.getElementById('logout').addEventListener('click', () => {
     });
 });
 
+// Allow users to create channels
 document.getElementById('create-channel-submit').addEventListener('click', () => {
     const name = document.getElementById('create-channel-name')
     const description = document.getElementById('create-channel-description');
@@ -227,6 +246,7 @@ document.getElementById('create-channel-submit').addEventListener('click', () =>
     });
 });
 
+// Quick links to dashboard and profile in navbar
 document.getElementById('show-profile').addEventListener('click', () => {
     showPage(`user-${globalUserId}`)
 })

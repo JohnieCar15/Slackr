@@ -2,10 +2,10 @@ import { apiCallGet, apiCallPost, apiCallPut, fileToDataUrl, convertISOString } 
 import { getUserName, createFormComponent } from './user.js';
 import { getMessages, sendMessage } from './message.js';
 import { showPage, globalToken, globalUserId } from './main.js';
-import { DEFAULT_PROFILE } from './config.js';
 
 export let pageCounter = 0;
 
+// Edit channel
 const editChannel = (channelId, name, description) => {
     const channelName = document.getElementById(`channel-${channelId}-name`)
     const channelDescription = document.getElementById(`channel-${channelId}-description`)
@@ -29,25 +29,20 @@ export const createChannelJoinPage = (channel) => {
         page.remove();
     }
 
+    // Simple page with only join button
     const channelPage = document.createElement('div');
+    channelPage.classList.add('container');
     channelPage.id = `page-channel-${channel.id}`
     channelPage.classList.add('page-block');
 
     const joinButton = document.createElement('button');
     joinButton.textContent = 'Join this channel';
+    joinButton.classList.add('btn', 'btn-primary')
     joinButton.addEventListener('click', () => {
         joinChannel(channel, globalUserId);
     })
 
     channelPage.appendChild(joinButton);
-
-    const goBack = document.createElement('button');
-    goBack.textContent = 'Go back to dashboard'
-    goBack.addEventListener('click', () => {
-        showPage('dashboard');
-    })
-    goBack.setAttribute('style', 'display: block');
-    channelPage.appendChild(goBack);
 
     document.getElementById('main').appendChild(channelPage);
 }
@@ -121,6 +116,7 @@ export const createChannelPage = (channel, isShowPage) => {
             editChannel(channel.id, editName[1].value, description.textContent);
             editName[1].value = '';
         })
+        editNameSubmit.classList.add('btn', 'btn-primary')
         editNameDiv.appendChild(editNameSubmit)
 
         channelPage.appendChild(editNameDiv);
@@ -143,6 +139,7 @@ export const createChannelPage = (channel, isShowPage) => {
             editChannel(channel.id, name.textContent, editDescription[1].value);
             editDescription[1].value = '';
         })
+        editDescriptionSubmit.classList.add('btn', 'btn-primary')
         editDescriptionDiv.appendChild(editDescriptionSubmit)
 
         channelPage.appendChild(editDescriptionDiv);
@@ -158,6 +155,7 @@ export const createChannelPage = (channel, isShowPage) => {
         channelPage.appendChild(messagesDiv);
 
         const pageBackward = document.createElement('button');
+        pageBackward.classList.add('btn', 'btn-secondary')
         pageBackward.textContent = 'Previous page';
         pageBackward.addEventListener('click', () => {
             if (pageCounter - 25 < 0) {
@@ -170,6 +168,7 @@ export const createChannelPage = (channel, isShowPage) => {
         channelPage.appendChild(pageBackward);
 
         const pageForward = document.createElement('button');
+        pageForward.classList.add('btn', 'btn-secondary')
         pageForward.textContent = 'Next page';
         pageForward.addEventListener('click', () => {
             getMessages(channel, pageCounter += 25, messagesDiv, pinnedMessagesDiv);
@@ -180,7 +179,7 @@ export const createChannelPage = (channel, isShowPage) => {
         getMessages(channel, pageCounter, messagesDiv, pinnedMessagesDiv);
 
         const sendMessageHeader = document.createElement('h3');
-        sendMessageHeader.textContent = 'Send a message:'
+        sendMessageHeader.textContent = 'Send a message'
         channelPage.appendChild(sendMessageHeader);
 
         const sendMessageText = createFormComponent('Message', 'text')
@@ -191,6 +190,7 @@ export const createChannelPage = (channel, isShowPage) => {
 
         const sendMessageSubmit = document.createElement('button');
         sendMessageSubmit.textContent = 'Submit'
+        sendMessageSubmit.classList.add('btn', 'btn-primary')
         sendMessageSubmit.addEventListener('click', () => {
             try {
                 fileToDataUrl(sendMessageImage[1].files[0]).then((image) => {
@@ -202,7 +202,7 @@ export const createChannelPage = (channel, isShowPage) => {
                 })
             } catch(err) {
                 if (sendMessageImage[1].files[0] === undefined) {
-                    sendMessage(channel, sendMessageText[1].value, '', messagesDiv, pinnedMessagesDiv);
+                    sendMessage(channel, sendMessageText[1].value, undefined, messagesDiv, pinnedMessagesDiv);
                 } else {
                     alert(err)
                 }
@@ -212,6 +212,7 @@ export const createChannelPage = (channel, isShowPage) => {
 
 
         const leave = document.createElement('button');
+        leave.classList.add('btn', 'btn-danger')
         leave.textContent = 'Leave the channel'
         leave.addEventListener('click', () => {
             leaveChannel(channel);

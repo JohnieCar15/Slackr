@@ -1,6 +1,6 @@
-import { apiCallGet, apiCallPost, apiCallPut, fileToDataUrl } from './helpers.js';
+import { apiCallGet, apiCallPut, fileToDataUrl } from './helpers.js';
 import { DEFAULT_PROFILE } from './config.js';
-import { showPage, loadDashboard, globalToken, globalUserId } from './main.js';
+import { showPage, globalToken, globalUserId } from './main.js';
 
 export const getUserName = (userId, creator) => {
     apiCallGet(`user/${userId}`, globalToken)
@@ -102,6 +102,7 @@ export const createUserProfile = (userId) => {
             userDiv.appendChild(editDetails);
 
             const submit = document.createElement('button');
+            submit.classList.add('btn', 'btn-primary');
             submit.textContent = 'Submit';
             submit.addEventListener('click', () => {
                 const fileInfo = editProfile[1].files[0]
