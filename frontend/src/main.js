@@ -8,7 +8,7 @@ export let globalToken = null;
 export let globalUserId = null;
 
 
-const loadDashboard = () => {
+export const loadDashboard = () => {
     const inviteModal = document.getElementById('inviteModal');
     inviteModal.textContent = '';
 
@@ -24,7 +24,6 @@ const loadDashboard = () => {
 
         for (let i = 0; i < users.length; i++) {
             createUserProfile(users[i].id);
-
 
             if (users[i].id !== globalUserId) {
                 const userDiv = document.createElement('div');
