@@ -1,15 +1,16 @@
 import { apiCallPost, apiCallGet, apiCallDelete, apiCallPut, convertISOString, removeAllChildNodes } from "./helpers.js"
-import { getUserName, getUserImage } from "./user.js";
+import { getUserName, getUserImage, createFormComponent } from "./user.js";
 import { globalToken, globalUserId, showPage } from "./main.js";
 import { pageCounter } from "./channel.js";
+import { DEFAULT_PROFILE } from "./config.js";
 
 export const sendMessage = (channel, message, image, messagesDiv, pinnedMessagesDiv) => {
-    if (message.length === 0) {
+    if (message.length === 0 && image === '') {
         return;
     }
 
     apiCallPost(`message/${channel.id}`, {
-        message: message,
+        message: message == '' ? undefined : message,
         image: image
     }, globalToken)
     .then((body) => {
@@ -135,17 +136,15 @@ export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
     apiCallGet(`message/${channel.id}?start=${index}`, globalToken)
     .then((body) => {
         const messages = body.messages.reverse();
+        let photoCounter = 0;
+        let maxPhotoCounter = messages.filter(x => x.hasOwnProperty('image')).length
         for (let i = 0; i < messages.length; i++) {
             const messageDiv = document.createElement('div');
-            messageDiv.style.paddingBottom = '40px';
             messageDiv.style.marginBottom = '20px';
             messageDiv.classList.add('container', 'bg-light', 'bg-gradient');
 
             const userDiv = document.createElement('div');
             userDiv.classList.add('d-flex', 'justify-content-between')
-            // userDiv.style.display = 'flex';
-            // userDiv.style.alignItems = 'center';
-            // userDiv.style.justifyContent = 'space-between'
 
             const userDivProfile = document.createElement('div');
             userDivProfile.classList.add('container', 'd-flex')
@@ -161,9 +160,6 @@ export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
                 showPage(`user-${messages[i].sender}`)
             })
 
-
-
-
             userDivProfile.appendChild(creator);
 
             userDiv.appendChild(userDivProfile);
@@ -172,7 +168,6 @@ export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
             timestamp.classList.add('container')
 
             timestamp.textContent = convertISOString(messages[i].sentAt);
-
 
             userDiv.appendChild(timestamp);
 
@@ -208,27 +203,40 @@ export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
 
             messageDiv.appendChild(userDiv);
 
-            const message = document.createElement('p');
-            message.textContent = messages[i].message;
-            messageDiv.appendChild(message);
+            if (messages[i].message !== undefined) {
+                const message = document.createElement('p');
+                message.textContent = messages[i].message;
+                messageDiv.appendChild(message);
+            }
+
+            if (messages[i].image !== undefined) {
+                const image = document.createElement('img');
+                image.style.height = '50px'
+                image.style.width = '50px'
+                image.classList.add('img-thumbnail')
+                createModal(channel, messages[i].image, photoCounter, maxPhotoCounter)
+                image.setAttribute('data-bs-toggle', 'modal')
+                image.setAttribute('data-bs-target', `#modal-${channel.id}-${photoCounter}`)
+                image.style.cursor = 'pointer'
+                image.src = messages[i].image;
+                messageDiv.appendChild(image);
+                photoCounter++;
+            }
 
             if (messages[i].sender === globalUserId) {
-                const editMessageHeader = document.createElement('h5');
-                editMessageHeader.textContent = 'Edit your message:'
-                messageDiv.appendChild(editMessageHeader);
+                const editMessageVal = createFormComponent('Edit message', 'text')
+                messageDiv.appendChild(editMessageVal[0])
 
-                const editMessageDiv = document.createElement('div');
+                const buttonDiv = document.createElement('div');
+                buttonDiv.classList.add('d-flex')
+                buttonDiv.classList.add('justify-content-between')
 
-                editMessageDiv.style.display = 'flex';
-                const editMessageVal = document.createElement('textarea');
-                editMessageDiv.appendChild(editMessageVal)
                 const editMessageSubmit = document.createElement('button');
-                editMessageSubmit.textContent = 'submit'
+                editMessageSubmit.textContent = 'Submit'
                 editMessageSubmit.addEventListener('click', () => {
-                    editMessage(channel, messages[i], editMessageVal, undefined, messagesDiv, pinnedMessagesDiv);
+                    editMessage(channel, messages[i], editMessageVal[1], undefined, messagesDiv, pinnedMessagesDiv);
                 })
-                editMessageDiv.appendChild(editMessageSubmit)
-                messageDiv.appendChild(editMessageDiv);
+                buttonDiv.appendChild(editMessageSubmit)
 
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
@@ -236,8 +244,9 @@ export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
                 deleteButton.addEventListener('click', () => {
                     deleteMessage(channel, messages[i], messageDiv);
                 })
-                messageDiv.appendChild(deleteButton);
+                buttonDiv.appendChild(deleteButton);
 
+                messageDiv.appendChild(buttonDiv)
             }
 
 
@@ -252,4 +261,69 @@ export const getMessages = (channel, index, messagesDiv, pinnedMessagesDiv) => {
     .catch((msg) => {
         alert(msg);
     })
+}
+
+
+const createModal = (channel, image, photoCounter, maxPhotoCounter) => {
+    const channelModal = document.createElement('div');
+    channelModal.classList.add('modal', 'fade')
+    channelModal.id = `modal-${channel.id}-${photoCounter}`;
+    channelModal.tabIndex = '-1'
+
+    const modalDialog = document.createElement('div');
+    modalDialog.classList.add('modal-dialog')
+    channelModal.appendChild(modalDialog)
+
+    const modalContent = document.createElement('div');
+    modalContent.classList.add('modal-content')
+    modalDialog.appendChild(modalContent)
+
+    const modalHeader = document.createElement('div');
+    modalHeader.classList.add('modal-header')
+
+    const modalHeaderH1 = document.createElement('h1')
+    modalHeaderH1.classList.add('modal-title', 'fs-5')
+    modalHeader.appendChild(modalHeaderH1)
+
+    const modalHeaderButton = document.createElement('button')
+    modalHeaderButton.classList.add('btn-close')
+    modalHeaderButton.setAttribute('data-bs-dismiss', 'modal')
+    modalHeader.appendChild(modalHeaderButton)
+
+    modalContent.appendChild(modalHeader)
+
+    const modalBody = document.createElement('div');
+    modalBody.classList.add('modal-body')
+
+    const modalImage = document.createElement('img');
+    modalImage.classList.add('img-fluid')
+    modalImage.src = image;
+
+    modalBody.appendChild(modalImage);
+
+    modalContent.appendChild(modalBody)
+
+    const modalFooter = document.createElement('div')
+
+
+    if (photoCounter > 0) {
+        const modalFooterLeftButton = document.createElement('button');
+        modalFooterLeftButton.classList.add('bi', 'bi-arrow-left')
+        modalFooterLeftButton.setAttribute('data-bs-toggle', 'modal')
+        modalFooterLeftButton.setAttribute('data-bs-target', `#modal-${channel.id}-${photoCounter - 1}`)
+        modalFooter.appendChild(modalFooterLeftButton)
+    }
+
+    if (photoCounter < maxPhotoCounter - 1) {
+        const modalFooterRightButton = document.createElement('button');
+        modalFooterRightButton.classList.add('bi', 'bi-arrow-right')
+        modalFooterRightButton.setAttribute('data-bs-toggle', 'modal')
+        modalFooterRightButton.setAttribute('data-bs-target', `#modal-${channel.id}-${photoCounter + 1}`)
+        modalFooter.appendChild(modalFooterRightButton)
+    }
+
+    modalContent.appendChild(modalFooter)
+
+
+    document.getElementById('main').appendChild(channelModal);
 }

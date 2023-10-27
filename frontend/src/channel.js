@@ -1,7 +1,8 @@
-import { apiCallGet, apiCallPost, apiCallPut, convertISOString } from './helpers.js';
-import { getUserName } from './user.js';
+import { apiCallGet, apiCallPost, apiCallPut, fileToDataUrl, convertISOString } from './helpers.js';
+import { getUserName, createFormComponent } from './user.js';
 import { getMessages, sendMessage } from './message.js';
 import { showPage, globalToken, globalUserId } from './main.js';
+import { DEFAULT_PROFILE } from './config.js';
 
 export let pageCounter = 0;
 
@@ -110,13 +111,16 @@ export const createChannelPage = (channel, isShowPage) => {
         const editNameHeader = document.createElement('h3');
         editNameHeader.textContent = 'Edit the channel name here:'
         editNameDiv.appendChild(editNameHeader)
-        const editName = document.createElement('textarea');
+
+        const editName = createFormComponent('Channel Name', 'text')[0]
         editNameDiv.appendChild(editName)
+
+
         const editNameSubmit = document.createElement('button');
-        editNameSubmit.textContent = 'submit'
+        editNameSubmit.textContent = 'Submit'
         editNameSubmit.addEventListener('click', () => {
-            editChannel(channel.id, editName.value, description.textContent);
-            editName.value = '';
+            editChannel(channel.id, editName[1].value, description.textContent);
+            editName[1].value = '';
         })
         editNameDiv.appendChild(editNameSubmit)
 
@@ -128,13 +132,17 @@ export const createChannelPage = (channel, isShowPage) => {
         const editDescriptionHeader = document.createElement('h3');
         editDescriptionHeader.textContent = 'Edit the channel description here:'
         editDescriptionDiv.appendChild(editDescriptionHeader)
-        const editDescription = document.createElement('textarea');
-        editDescriptionDiv.appendChild(editDescription)
+
+
+        const editDescription = createFormComponent('Description', 'text');
+        editDescriptionDiv.appendChild(editDescription[0])
+
+
         const editDescriptionSubmit = document.createElement('button');
-        editDescriptionSubmit.textContent = 'submit'
+        editDescriptionSubmit.textContent = 'Submit'
         editDescriptionSubmit.addEventListener('click', () => {
-            editChannel(channel.id, name.textContent, editDescription.value);
-            editDescription.value = '';
+            editChannel(channel.id, name.textContent, editDescription[1].value);
+            editDescription[1].value = '';
         })
         editDescriptionDiv.appendChild(editDescriptionSubmit)
 
@@ -172,22 +180,36 @@ export const createChannelPage = (channel, isShowPage) => {
 
         getMessages(channel, pageCounter, messagesDiv, pinnedMessagesDiv);
 
-        const sendMessagesDiv = document.createElement('div');
         const sendMessageHeader = document.createElement('h3');
         sendMessageHeader.textContent = 'Send a message:'
-        sendMessagesDiv.appendChild(sendMessageHeader);
+        channelPage.appendChild(sendMessageHeader);
 
-        const sendMessageVal = document.createElement('textarea');
-        sendMessagesDiv.appendChild(sendMessageVal);
+        const sendMessageText = createFormComponent('Message', 'text')
+        channelPage.appendChild(sendMessageText[0]);
+
+        const sendMessageImage = createFormComponent('Photo', 'file')
+        channelPage.appendChild(sendMessageImage[0]);
+
         const sendMessageSubmit = document.createElement('button');
-        sendMessageSubmit.textContent = 'submit'
+        sendMessageSubmit.textContent = 'Submit'
         sendMessageSubmit.addEventListener('click', () => {
-            sendMessage(channel, sendMessageVal.value, undefined, messagesDiv, pinnedMessagesDiv);
-            sendMessageVal.value = '';
+            try {
+                fileToDataUrl(sendMessageImage[1].files[0]).then((image) => {
+                    sendMessage(channel, sendMessageText[1].value, image, messagesDiv, pinnedMessagesDiv);
+                    sendMessageText[1].value = '';
+                })
+                .catch((msg) => {
+                    alert(msg)
+                })
+            } catch(err) {
+                if (sendMessageImage[1].files[0] === undefined) {
+                    sendMessage(channel, sendMessageText[1].value, '', messagesDiv, pinnedMessagesDiv);
+                } else {
+                    alert(err)
+                }
+            }
         })
-        sendMessagesDiv.appendChild(sendMessageSubmit);
-
-        channelPage.appendChild(sendMessagesDiv);
+        channelPage.appendChild(sendMessageSubmit)
 
 
         const leave = document.createElement('button');
@@ -197,15 +219,6 @@ export const createChannelPage = (channel, isShowPage) => {
         })
         leave.setAttribute('style', 'display: block');
         channelPage.appendChild(leave);
-
-
-        const goBack = document.createElement('button');
-        goBack.textContent = 'Go back to dashboard'
-        goBack.addEventListener('click', () => {
-            showPage('dashboard');
-        })
-        goBack.setAttribute('style', 'display: block');
-        channelPage.appendChild(goBack);
 
         document.getElementById('main').appendChild(channelPage);
 

@@ -82,50 +82,55 @@ export const createUserProfile = (userId) => {
             console.log(`Making ${userId}'s profile`)
             const editDetails = document.createElement('form');
 
-            const editName = addFormComponent('name', 'Name', 'text', userId)
-            editDetails.appendChild(editName)
+            const editName = createFormComponent('Name', 'text')
+            editDetails.appendChild(editName[0])
 
-            const editBio = addFormComponent('bio', 'Bio', 'text', userId)
-            editDetails.appendChild(editBio)
+            const editBio = createFormComponent('Bio', 'text')
+            editDetails.appendChild(editBio[0])
 
-            const editEmail = addFormComponent('email', 'Email', 'email', userId)
+            const editEmail = createFormComponent('Email', 'email')
 
-            editDetails.appendChild(editEmail)
+            editDetails.appendChild(editEmail[0])
 
 
-            const editPassword = addFormComponent('password', 'Password', 'password', userId)
-            editDetails.appendChild(editPassword)
+            const editPassword = createFormComponent('Password', 'password')
+            editDetails.appendChild(editPassword[0])
 
-            const editPasswordConfirm = addFormComponent('confirm-password', 'Confirm Password', 'password', userId)
-            editDetails.appendChild(editPasswordConfirm)
+            const editPasswordConfirm = createFormComponent('Confirm Password', 'password')
+            editDetails.appendChild(editPasswordConfirm[0])
 
-            const file = addFormComponent('profile', 'Profile Picture', 'file', userId)
-            editDetails.appendChild(file)
+            const editProfile = createFormComponent('Profile Picture', 'file')
+            editDetails.appendChild(editProfile[0])
 
             userDiv.appendChild(editDetails);
 
             const submit = document.createElement('button');
             submit.textContent = 'Submit';
             submit.addEventListener('click', () => {
-                const file = document.getElementById(`profile-${userId}`).files[0]
-                const email = document.getElementById(`email-${userId}`).value
-                const password = document.getElementById(`password-${userId}`).value
-                const confirmPassword = document.getElementById(`confirm-password-${userId}`).value
-                const name = document.getElementById(`name-${userId}`).value
-                const bio = document.getElementById(`bio-${userId}`).value
+                const fileInfo = editProfile[1].files[0]
+                const email = editEmail[1].value
+                const password = editPassword[1].value
+                const confirmPassword = editPasswordConfirm[1].value
+                const name = editName[1].value
+                const bio = editBio[1].value
+                console.log(fileInfo, email, password, confirmPassword, name, bio)
 
                 if (password !== confirmPassword) {
                     alert('Passwords do not match!')
                 } else {
                     try {
-                        fileToDataUrl(file).then((image) => {
+                        fileToDataUrl(fileInfo).then((image) => {
                             updateUserDetails(email, password, name, bio, image)
                         })
                         .catch((msg) => {
-                            alert(msg);
+                            alert(msg)
                         })
-                    } catch {
-                        updateUserDetails(email, password, name, bio, '')
+                    } catch(err) {
+                        if (fileInfo === undefined) {
+                            updateUserDetails(email, password, name, bio, '')
+                        } else {
+                            alert(err)
+                        }
                     }
                 }
             })
@@ -133,14 +138,6 @@ export const createUserProfile = (userId) => {
 
             userDiv.appendChild(submit);
         }
-
-        const goBack = document.createElement('button');
-        goBack.textContent = 'Go back to dashboard'
-        goBack.addEventListener('click', () => {
-            showPage('dashboard');
-        })
-        goBack.setAttribute('style', 'display: block');
-        userDiv.appendChild(goBack);
 
         document.getElementById('main').appendChild(userDiv);
 
@@ -165,12 +162,13 @@ const updateUserDetails = (email, password, name, bio, image) => {
     })
 }
 
-const addFormComponent = (name, displayName, type, userId) => {
+export const createFormComponent = (displayName, type) => {
     const mainDiv = document.createElement('div');
     mainDiv.classList.add('mb-3')
 
     const label = document.createElement('label');
     label.classList.add('form-label')
+    label.classList.add('h6')
     label.textContent = displayName;
 
     mainDiv.appendChild(label);
@@ -181,7 +179,7 @@ const addFormComponent = (name, displayName, type, userId) => {
     const input = document.createElement('input');
     input.classList.add('form-control');
     input.setAttribute('type', type)
-    input.id = `${name}-${userId}`
+    // input.id = `${name}-${userId}`
 
     inputDiv.appendChild(input);
 
@@ -212,5 +210,5 @@ const addFormComponent = (name, displayName, type, userId) => {
     mainDiv.appendChild(inputDiv)
 
 
-    return mainDiv;
+    return [mainDiv, input];
 }

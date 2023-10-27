@@ -228,8 +228,12 @@ document.getElementById('create-channel-submit').addEventListener('click', () =>
     });
 });
 
-document.getElementById('profile').addEventListener('click', () => {
+document.getElementById('show-profile').addEventListener('click', () => {
     showPage(`user-${globalUserId}`)
+})
+
+document.getElementById('show-dashboard').addEventListener('click', () => {
+    showPage('dashboard')
 })
 
 for (const redirect of document.querySelectorAll('.redirect')) {
