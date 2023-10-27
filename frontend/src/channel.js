@@ -55,7 +55,6 @@ export const createChannelJoinPage = (channel) => {
 export const createChannelPage = (channel, isShowPage) => {
     apiCallGet(`channel/${channel.id}`, globalToken)
     .then((body) => {
-        console.log(body);
         const page = document.getElementById(`page-channel-${channel.id}`)
         if (page !== null) {
             page.remove();

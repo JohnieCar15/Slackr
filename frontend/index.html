@@ -19,12 +19,21 @@
 </head>
 
 <body>
-  <!-- This is an example app structure, you can modify this as much as you choose -->
-  <nav class="container navbar navbar-light bg-light">
+  <!-- Navbar taken from bootstrap -->
+  <nav class="navbar container navbar-expand-lg navbar-light bg-light">
     <h1>Slackr</h1>
-    <a id="show-dashboard">Dashboard</a>
-    <a id="show-profile">Profile</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-item nav-link active" id="show-dashboard" href="#">Dashboard</a>
+        <a class="nav-item nav-link"  id="show-profile" href="#">Profile</a>
+      </div>
+    </div>
   </nav>
+    <!-- Navbar finish -->
+
   <main role="main" id="main">
     <!-- app goes here -->
     <div id="page-dashboard" class="page-block container">

@@ -29,7 +29,6 @@ export const getUserImage = (userId, image) => {
 export const getAllUsers = () => {
     apiCallGet('user', globalToken)
     .then((body) => {
-        // console.log(body)
     })
     .catch((msg) => {
         alert(msg);
@@ -39,7 +38,6 @@ export const getAllUsers = () => {
 export const createUserProfile = (userId) => {
     apiCallGet(`user/${userId}`, globalToken)
     .then((body) => {
-        // console.log(body)
         const prevUserPage = document.getElementById(`page-user-${userId}`)
         if (prevUserPage !== null) {
             prevUserPage.remove();
@@ -79,7 +77,6 @@ export const createUserProfile = (userId) => {
         userDiv.appendChild(email);
 
         if (userId === globalUserId) {
-            console.log(`Making ${userId}'s profile`)
             const editDetails = document.createElement('form');
 
             const editName = createFormComponent('Name', 'text')
@@ -113,7 +110,6 @@ export const createUserProfile = (userId) => {
                 const confirmPassword = editPasswordConfirm[1].value
                 const name = editName[1].value
                 const bio = editBio[1].value
-                console.log(fileInfo, email, password, confirmPassword, name, bio)
 
                 if (password !== confirmPassword) {
                     alert('Passwords do not match!')
@@ -179,7 +175,6 @@ export const createFormComponent = (displayName, type) => {
     const input = document.createElement('input');
     input.classList.add('form-control');
     input.setAttribute('type', type)
-    // input.id = `${name}-${userId}`
 
     inputDiv.appendChild(input);
 

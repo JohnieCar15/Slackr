@@ -62,7 +62,6 @@ export const loadDashboard = () => {
             inviteModal.appendChild(channelsHeader);
 
             for (const channel of body.channels) {
-                // console.log(channel);
                 if (channel.members.includes(globalUserId) || !channel.private) {
                     const channelDiv = document.createElement('a');
                     channelDiv.textContent = `${channel.name}`;
